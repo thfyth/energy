@@ -1,0 +1,1433 @@
+<template>
+  <div class="service-main">
+    <el-tabs v-model="activeName" :before-leave="handleLeave">
+      <el-tab-pane label="用户档案管理" name="first">
+        <div class="main">
+          <div class="title-box" style="width: auto">
+            <div class="title-list">
+              <div class="list-box list-input">
+                <!-- <span class="title">姓名</span> -->
+                <el-input
+                  v-model="query.equipmentName"
+                  placeholder="设备名称"
+                  style="width: 200px"
+                  clearable
+                />
+              </div>
+              <div class="list-box">
+                <el-button type="primary" plain icon="el-icon-query"
+                  >筛选</el-button
+                >
+              </div>
+            </div>
+            <div class="titles-list">
+              <el-button class="insert" @click="addCustomerFun" type="primary"
+                >新建客户</el-button
+              >
+            </div>
+          </div>
+          <div class="table-view">
+            <el-table :data="customerData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="customerName"
+                label="客户名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="customerAddress"
+                label="客户地址"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="customerType"
+                label="业态"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contacts"
+                label="联系人"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contactsType"
+                label="联系方式"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="guessArea"
+                label="预计供能面积"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openCustomer(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delCustomerFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentCustomerChange"
+              layout="total,prev, pager, next"
+              :total="customerTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="合同管理" name="second">
+        <div class="main">
+          <div class="title-box" style="width: auto">
+            <div class="title-list">
+              <div class="list-box list-input">
+                <!-- <span class="title">姓名</span> -->
+                <el-input
+                  v-model="query.equipmentName"
+                  placeholder="设备名称"
+                  style="width: 200px"
+                  clearable
+                />
+              </div>
+              <div class="list-box">
+                <el-button type="primary" plain icon="el-icon-query"
+                  >筛选</el-button
+                >
+              </div>
+            </div>
+            <div class="titles-list">
+              <el-button class="insert" @click="addContractFun" type="primary"
+                >新建合同</el-button
+              >
+            </div>
+          </div>
+          <div class="table-view">
+            <el-table :data="contractData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="customerName"
+                label="客户名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contractCode"
+                label="合同编号"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="area"
+                label="供能面积"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="serviceDate"
+                label="服务时间"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="spaceLayoutFile"
+                label="末端空间布局"
+                width="120"
+                align="center"
+              >
+              <template>
+                <span>附件X</span>
+              </template>
+              </el-table-column>
+              <el-table-column
+                prop="freightBasis"
+                label="计费标准"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="signDate"
+                label="签约日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="firstEnergySupplyDate"
+                label="首次供能日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openContract(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delContractFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentContractChange"
+              layout="total,prev, pager, next"
+              :total="contractTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <!-- <el-tab-pane label="供能服务管理" name="third"></el-tab-pane> -->
+      <el-tab-pane label="述求管理" name="fourth">
+        <div class="main">
+          <div class="title-box" style="width: auto">
+            <div class="title-list">
+              <div class="list-box list-input">
+                <!-- <span class="title">姓名</span> -->
+                <el-input
+                  v-model="query.equipmentName"
+                  placeholder="设备名称"
+                  style="width: 200px"
+                  clearable
+                />
+              </div>
+              <div class="list-box">
+                <el-button type="primary" plain icon="el-icon-query"
+                  >筛选</el-button
+                >
+              </div>
+            </div>
+            <div class="titles-list">
+              <el-button class="insert" @click="addSeekingFun" type="primary"
+                >新建诉求</el-button
+              >
+            </div>
+          </div>
+           <div class="table-view">
+            <el-table :data="seekingData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="customerName"
+                label="客户名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contractCode"
+                label="合同编号"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="createDate"
+                label="发起时间"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="appealType"
+                label="诉求类型"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="freightBasis"
+                label="计费标准"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="signDate"
+                label="签约日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="firstEnergySupplyDate"
+                label="首次供能日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openSeeking(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delSeekFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentSeekingChange"
+              layout="total,prev, pager, next"
+              :total="seekingTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="报修管理" name="five">
+        <div class="main">
+          <div class="title-box" style="width: auto">
+            <div class="title-list">
+              <div class="list-box list-input">
+                <!-- <span class="title">姓名</span> -->
+                <el-input
+                  v-model="query.equipmentName"
+                  placeholder="设备名称"
+                  style="width: 200px"
+                  clearable
+                />
+              </div>
+              <div class="list-box">
+                <el-button type="primary" plain icon="el-icon-query"
+                  >筛选</el-button
+                >
+              </div>
+            </div>
+            <div class="titles-list">
+              <el-button class="insert" @click="addReportFun" type="primary"
+                >新建报修</el-button
+              >
+            </div>
+          </div>
+           <div class="table-view">
+            <el-table :data="reportData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="customerName"
+                label="客户名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contractCode"
+                label="合同编号"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="createDate"
+                label="发起时间"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="reportRepairType"
+                label="报修类型"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="freightBasis"
+                label="计费标准"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="signDate"
+                label="签约日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="firstEnergySupplyDate"
+                label="首次供能日期"
+                width="120"
+                align="center"
+              ></el-table-column>
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openReport(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delReportFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentReportChange"
+              layout="total,prev, pager, next"
+              :total="reportTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="服务回访管理" name="six">
+        <div class="main">
+          
+          <div class="table-view">
+            <el-table :data="visitData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="customerName"
+                label="客户名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="contractCode"
+                label="合同编号"
+                width="120"
+                align="center"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="startDate"
+                label="发起时间"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="reportType"
+                label="上报类型"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="sponsor"
+                label="发起人"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                label="处理情况"
+                width="180"
+                align="center"
+              >
+              <template slot-scope="{row}">
+                <span class="faqi" v-if="row.status == 0">发起</span>
+                <span class="banjie" v-if="row.status == 1">办结</span>
+              </template>
+              </el-table-column>
+              <el-table-column
+                prop="endDate"
+                label="办结时间"
+                width="180"
+                align="center"
+              ></el-table-column>
+              
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openVisit(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delVisitFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentMsgChange"
+              layout="total,prev, pager, next"
+              :total="customerTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="推送消息管理" name="seven">
+        <div class="main">
+          <div class="title-box" style="width: auto">
+            <div class="title-list">
+              <div class="list-box list-input">
+                <!-- <span class="title">姓名</span> -->
+                <el-input
+                  v-model="query.equipmentName"
+                  placeholder="设备名称"
+                  style="width: 200px"
+                  clearable
+                />
+              </div>
+              <div class="list-box">
+                <el-button type="primary" plain icon="el-icon-query"
+                  >筛选</el-button
+                >
+              </div>
+            </div>
+            <div class="titles-list">
+              <el-button class="insert" @click="addMsgFun" type="primary"
+                >新建消息</el-button
+              >
+            </div>
+          </div>
+          <div class="table-view">
+            <el-table :data="msgData" stripe style="width: 100%">
+              <el-table-column type="selection" width="55"></el-table-column>
+              <el-table-column type="index" label="序号" width="80">
+              </el-table-column>
+              <el-table-column
+                prop="msgName"
+                label="消息名称"
+                width="100"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="msgType"
+                label="消息类型"
+                width="120"
+                align="center"
+              >
+              <template slot-scope="{row}">
+                <span v-if="row.msgType == 1">新闻</span>
+                <span v-else-if="row.msgType == 2">小常识</span>
+                <span v-else>---</span>
+              </template>
+              </el-table-column>
+              <!-- 消息类型（1新闻2小常识） -->
+              <el-table-column
+                prop="updateDate"
+                label="更新时间"
+                width="180"
+                align="center"
+              ></el-table-column>
+              <el-table-column
+                prop="createBy"
+                label="编辑人"
+                width="180"
+                align="center"
+              ></el-table-column>
+              
+              <el-table-column fixed="right" align="center" label="操作" width="200">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" @click="openMsg(row)"
+                    >查看</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delMsgFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference">删除</el-button>
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="pagination-box ">
+            <el-pagination
+              background
+              @current-change="currentMsgChange"
+              layout="total,prev, pager, next"
+              :total="customerTotal">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+
+    <div class="model">
+      <!-- 合同 -->
+      <el-dialog
+        title="合同信息"
+        :visible.sync="contractVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="contractForm" :model="form" label-width="120px">
+          <el-form-item label="客户">
+            <!-- <el-input v-model="form.customerId"></el-input> -->
+             <el-autocomplete
+                v-model="form.customerName"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入内容"
+                @select="handleSelect"
+              ></el-autocomplete>
+          </el-form-item>
+          <el-form-item label="合同编号">
+            <el-input v-model="form.contractCode"></el-input>
+          </el-form-item>
+          <el-form-item label="供能面积">
+            <el-input v-model.number="form.area"></el-input>
+          </el-form-item>
+          <el-form-item label="服务时间">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="form.serviceDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="末端空间布局">
+            <!--  -->
+            <div v-if="form.spaceLayoutFile">
+              <el-popconfirm
+                title="确认删除文件?"
+                @onConfirm="delFileFun(form.spaceLayoutFile)"
+              >
+                <el-button slot="reference">删除文件</el-button>
+              </el-popconfirm>
+            </div>
+            <el-upload
+              v-else
+              action="http://192.168.1.52:6004/api/admin/file/uploadFile"
+              :show-file-list="false"
+              :on-success="handleUrl"
+              name="files"
+              :headers="headersData"
+            >
+              <el-button>上传</el-button>
+            </el-upload>
+          </el-form-item>
+          <el-form-item label="计费标准">
+            <el-input v-model.number="form.freightBasis">
+              <template slot="append">元/M²（元/平方米）</template>
+            </el-input>
+          </el-form-item>
+          <el-form-item label="签约日期">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="form.signDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="首次供能日期">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="form.firstEnergySupplyDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="contractVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveContract">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 客户 -->
+      <el-dialog
+        title="客户信息"
+        :visible.sync="customerVisible"
+        width="30%"
+        :before-close="handleClose"
+      >
+        <el-form ref="customerForm" :model="form" label-width="100px">
+          <el-form-item label="客户名称">
+            <el-input v-model="form.customerName"></el-input>
+          </el-form-item>
+          <el-form-item label="客户地址">
+            <el-input v-model="form.customerAddress"></el-input>
+          </el-form-item>
+          <el-form-item label="业态">
+            <el-input v-model="form.customerType"></el-input>
+          </el-form-item>
+          <el-form-item label="联系人">
+            <el-input v-model="form.contacts"></el-input>
+          </el-form-item>
+          <el-form-item label="联系方式">
+            <el-input v-model="form.contactsType"></el-input>
+          </el-form-item>
+          <el-form-item label="预计供能面积">
+            <el-input v-model="form.guessArea">
+              <template slot="append">M²（平方米）</template>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="customerVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveCustomer">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 述求 -->
+      <el-dialog
+        title="述求信息"
+        :visible.sync="seekingVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="contractForm" :model="form" label-width="120px">
+          <el-form-item label="客户名称">
+            <!-- <el-input v-model="form.customerId"></el-input> -->
+             <el-autocomplete
+                v-model="form.customerName"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入客户名称"
+                @select="handleSelect"
+              ></el-autocomplete>
+          </el-form-item>
+          <el-form-item label="合同编号">
+            <el-input disabled v-model="form.contractCode"></el-input>
+          </el-form-item>
+          <el-form-item label="诉求类型">
+            <el-input v-model="form.appealType"></el-input>
+          </el-form-item>
+          
+          <el-form-item label="诉求内容">
+            <el-input type="textarea" :rows="3" v-model="form.appealContent"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="seekingVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveSeeking">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 报修 -->
+       <el-dialog
+        title="报修信息"
+        :visible.sync="reportVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="contractForm" :model="form" label-width="120px">
+          <el-form-item label="客户名称">
+            <!-- <el-input v-model="form.customerId"></el-input> -->
+             <el-autocomplete
+                v-model="form.customerName"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入客户名称"
+                @select="handleSelect"
+              ></el-autocomplete>
+          </el-form-item>
+          <el-form-item label="合同编号">
+            <el-input disabled v-model="form.contractCode"></el-input>
+          </el-form-item>
+          <el-form-item label="报修类型">
+            <el-input v-model="form.reportRepairType"></el-input>
+          </el-form-item>
+          
+          <el-form-item label="诉求内容">
+            <el-input type="textarea" :rows="3" v-model="form.reportRepairContent"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="reportVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveReport">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 消息 -->
+      <el-dialog
+        title="合同信息"
+        :visible.sync="msgVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="contractForm" :model="form" label-width="120px">
+          <el-form-item label="消息名称">
+            <el-input v-model="form.msgName"></el-input>
+          </el-form-item>
+          <el-form-item label="消息类型">
+            <el-select v-model="form.msgType" placeholder="消息类型">
+                <el-option
+                  v-for="item in msgType"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          <el-form-item label="更新时间">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="form.updateDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="消息内容">
+            <el-input v-model="form.msgContent" type="textarea" :rows="3"></el-input>
+          </el-form-item>
+          <el-form-item label="附件">
+            <!--  -->
+            <div v-if="form.filePath">
+              <el-popconfirm
+                title="确认删除文件?"
+                @onConfirm="delFileFun(form.filePath)"
+              >
+                <el-button slot="reference">删除文件</el-button>
+              </el-popconfirm>
+            </div>
+            <el-upload
+              v-else
+              action="http://192.168.1.52:6004/api/admin/file/uploadFile"
+              :show-file-list="false"
+              :on-success="handleMsgUrl"
+              name="files"
+              :headers="headersData"
+            >
+              <el-button>上传</el-button>
+            </el-upload>
+          </el-form-item>
+          
+         
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="msgVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveMsg">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 服务回访 -->
+      <el-dialog
+        title="服务回访"
+        :visible.sync="visitVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="visitForm" :model="form" label-width="120px">
+          <el-form-item label="客户名称">
+            <el-input v-model="form.customerName" disabled></el-input>
+          </el-form-item>
+          <el-form-item  label="合同编号">
+            <el-input v-model="form.contractCode" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="上报类型">
+            <el-input v-model="form.reportType" disabled type="textarea" :rows="3"></el-input>
+          </el-form-item>
+          <el-form-item label="工单状态">
+             <el-select v-model.number="form.status" placeholder="工单状态">
+                <el-option
+                  v-for="item in statusType"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+          </el-form-item>
+          
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="visitVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveVisit">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+  </div>
+</template>
+<script>
+let vm;
+import { delFiles } from "@/api/file";
+import { getToken } from "@/utils/auth";
+
+import {
+  /* 合同 */
+  addContract,
+  delContract,
+  getIdContract,
+  selectContract,
+  updataContract,
+  /* 客户 */
+  addCustomer,
+  selectCustomer,
+  updataCustomer,
+  delCustomer,
+  /* 述求 */
+  addAppeal,
+  updataAppeal,
+  delAppeal,
+  selectAppeal,
+  /* 报修 */
+  addReport,
+  updataReport,
+  delReport,
+  selectReport,
+  /* 消息 */
+  addMsg,
+  updaMsg,
+  delMsg,
+  selectMsg,
+  /* 服务回访 */
+  delVisit,
+  selectVisit,
+  updataVisit
+} from "@/api/service";
+
+export default {
+  data() {
+    return {
+      query: {
+        pageNumber: 1,
+        pageSize: 20,
+      },
+      activeName: "first",
+      /* 客户参数 */
+      customerData: [],
+      customerVisible: false,
+      customerTotal: 0,
+      /* 合同参数 */
+      contractData: [],
+      contractVisible: false,
+      contractTotal: 0,
+      /* 诉求参数 */
+      seekingData: [],
+      seekingVisible: false,
+      seekingTotal: 0,
+      /* 报修参数 */
+      reportData: [],
+      reportVisible: false,
+      reportTotal: 0,
+      /* 信息推送参数 */
+      msgData: [],
+      msgVisible: false,
+      msgTotal: 0,
+      msgType: [
+        { value: "1", label: "新闻" },
+        { value: "2", label: "小常识" },
+      ],
+      /* 服务回访 */
+      visitVisible: false,
+      visitData: [],
+      visitTotal: 0,
+      statusType: [
+        { value: 0, label: "发起" },
+        { value: 1, label: "办结" },
+      ],
+      /* 通用 */
+      form: {},
+      total: 0,
+      headersData: {
+        Authorization: "Bearer " + getToken(),
+      },
+      //用户操作 true为新增，false为修改
+      option: true,
+    };
+  },
+  created() {
+    vm = this;
+    // vm.getContractList()
+    vm.getCustomerList();
+    // vm.getSeekingList()
+    // vm.getReportList()
+    // vm.getMsgList()
+  },
+  components: {},
+  methods: {
+    //通用重置
+    resetQuery() {
+      vm.option = true;
+      vm.query = {
+        pageNumber: 1,
+        pageSize: 10,
+      };
+      vm.form = {};
+    },
+    /* 合同 */
+    //查询所有合同
+    getContractList() {
+      selectContract(vm.query).then((res) => {
+        if (res.code === 0) {
+          vm.contractData = res.data.records;
+          vm.contractTotal = res.data.total;
+        } else {
+          vm.contractData = [];
+          vm.contractTotal = 0;
+        }
+      });
+    },
+    //新建合同
+    addContractFun() {
+      vm.resetQuery();
+      vm.contractVisible = true;
+    },
+    //删除合同文件
+    delFileFun(pathList) {
+      delFiles({ pathList }).then((res) => {
+        if (res.code === 0) {
+          vm.form.spaceLayoutFile = null;
+          vm.$set(vm.form);
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    handleUrl(file) {
+      console.log(file);
+      if (file.code === 0) {
+        const url = file.data.pathList[0];
+        vm.form.spaceLayoutFile = url;
+        vm.$set(vm.form);
+      }
+    },
+    //保存合同
+    saveContract() {
+      let data;
+      if (vm.option) {
+        //新增
+        data = addContract(vm.form);
+      } else {
+        //修改
+        data = updataContract(vm.form);
+      }
+
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.getContractList();
+          vm.$message.success(res.message);
+          vm.contractVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //打开一个合同
+    openContract(row){
+      vm.form = row;
+      vm.option = false;
+      vm.contractVisible = true;
+    },
+    //删除合同
+    delContractFun(row){
+      const { contractId } = row;
+      delContract({contractId}).then(res=>{
+        if(res.code === 0){
+          vm.getContractList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //分页
+    currentContractChange(e){
+      vm.query.pageNumber = e;
+      vm.getContractList();
+    },
+    /* 客户 */
+    addCustomerFun() {
+      vm.resetQuery();
+      vm.customerVisible = true;
+    },
+    //查询所有客户
+    getCustomerList() {
+      selectCustomer(vm.query).then((res) => {
+        if (res.code === 0) {
+          vm.customerData = res.data.records;
+          vm.customerTotal = res.data.total;
+        } else {
+          vm.customerData = [];
+          vm.customerTotal = 0;
+        }
+      });
+    },
+    //保存客户
+    saveCustomer(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addCustomer(vm.form);
+      } else {
+        //修改
+        data = updataCustomer(vm.form);
+      }
+
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.getCustomerList();
+          vm.$message.success(res.message);
+          vm.customerVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //查看一个客户
+    openCustomer(row){
+      vm.form = row;
+      vm.option = false;
+      vm.customerVisible = true;
+    },
+    //删除一个客户
+    delCustomerFun(row){
+      const { customerId } = row;
+      delCustomer({customerId}).then(res=>{
+        if(res.code === 0){
+          vm.getCustomerList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //分页
+    currentCustomerChange(e){
+      vm.query.pageNumber = e;
+      vm.getCustomerList();
+    },
+    /* 述求 */
+
+    //获取诉求
+    getSeekingList(){
+      selectAppeal(vm.query).then((res) => {
+        console.log(res);
+        if (res.code === 0) {
+          vm.seekingData = res.data.records;
+          vm.seekingTotal = res.data.total;
+        } else {
+          vm.seekingData = [];
+          vm.seekingTotal = 0;
+        }
+      });
+    },
+
+    //新增述求
+    addSeekingFun(){
+      vm.resetQuery();
+      vm.seekingVisible = true;
+    },
+    //保存诉求
+    saveSeeking(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addAppeal(vm.form);
+      } else {
+        //修改
+        data = updataAppeal(vm.form);
+      }
+
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.getSeekingList();
+          vm.$message.success(res.message);
+          vm.seekingVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //查看一个诉求
+    openSeeking(row){
+      vm.form = row;
+      vm.option = false;
+      vm.seekingVisible = true;
+    },
+    //删除一个诉求
+    delSeekFun(row){
+      const { appealId } = row;
+      delAppeal({id:appealId}).then(res=>{
+        if(res.code === 0){
+          vm.getSeekingList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //分页
+    currentSeekingChange(e){
+      vm.query.pageNumber = e;
+      vm.getSeekingList();
+    },
+
+    /* 报修 */
+
+    //获取报修列表
+    getReportList(){
+      selectReport(vm.query).then((res) => {
+        console.log(res);
+        if (res.code === 0) {
+          vm.reportData = res.data.records;
+          vm.reportTotal = res.data.total;
+        } else {
+          vm.reportData = [];
+          vm.reportTotal = 0;
+        }
+      });
+    },
+    //新增报修
+    addReportFun(){
+      vm.resetQuery();
+      vm.reportVisible = true;
+    },
+    //保存报修
+    saveReport(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addReport(vm.form);
+      } else {
+        //修改
+        data = updataReport(vm.form);
+      }
+
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.getReportList();
+          vm.$message.success(res.message);
+          vm.reportVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //查看一个报修
+    openReport(row){
+      vm.form = row;
+      vm.option = false;
+      vm.reportVisible = true;
+    },
+    //删除一个报修
+    delReportFun(row){
+      const { reportRepairId } = row;
+      delReport({id:reportRepairId}).then(res=>{
+        if(res.code === 0){
+          vm.getReportList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //分页
+    currentReportChange(){
+      vm.query.pageNumber = e;
+      vm.getReportList();
+    },
+    /* 推送消息管理 */
+    getMsgList(){
+      selectMsg(vm.query).then(res=>{
+        if (res.code === 0) {
+          vm.msgData = res.data.records;
+          vm.msgTotal = res.data.total;
+        } else {
+          vm.msgData = [];
+          vm.msgTotal = 0;
+        }
+      })
+    },
+    //新增消息
+    addMsgFun(){
+      vm.resetQuery();
+      vm.msgVisible = true;
+    },
+    handleMsgUrl(file) {
+      if (file.code === 0) {
+        vm.$message.success(file.message);
+        const url = file.data.pathList[0];
+        vm.form.filePath = url;
+        vm.$set(vm.form);
+      }else{
+        vm.$message.error(file.message);
+      }
+    },
+    //保存消息
+    saveMsg(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addMsg(vm.form);
+      } else {
+        //修改
+        data = updaMsg(vm.form);
+      }
+
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.getMsgList();
+          vm.$message.success(res.message);
+          vm.msgVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //查看一个消息
+    openMsg(row){
+      vm.form = row;
+      vm.option = false;
+      vm.msgVisible = true;
+    },
+    //删除一个消息
+    delMsgFun(row){
+      const { msgId } = row;
+      delMsg({id:msgId}).then(res=>{
+        if(res.code === 0){
+          vm.getMsgList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //分页
+    currentMsgChange(){
+      vm.query.pageNumber = e;
+      vm.getMsgList();
+    },
+    /* 查询服务回访列表 */
+    selectVisitList(){
+      selectVisit(vm.query).then(res=>{
+        if(res.code === 0){
+          vm.visitData = res.data.records;
+          vm.visitTotal = res.data.total;
+        }else{
+          vm.visitData = [];
+          vm.visitTotal = 0;
+        }
+      })
+    },
+    openVisit(row){
+      vm.option = false;
+      vm.form = row;
+      vm.visitVisible = true;
+    },
+    delVisitFun(row){
+      const {id} = row;
+      delVisit({id}).then(res=>{
+        if(res.code === 0){
+          vm.selectVisitList();
+          vm.$message.success(res.message);
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //保存 更新服务回访详细
+    saveVisit(){
+      updataVisit(vm.form).then(res=>{
+        if(res.code === 0){
+          vm.selectVisitList();
+          vm.$message.success(res.message);
+          vm.visitVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      })
+    },
+
+    //切换TAB
+    handleLeave(newId) {
+      vm.query={
+        pageNumber: 1,
+        pageSize: 20
+      }
+      console.log(newId);
+      if (newId !== vm.activeName) {
+        vm.activeName = newId;
+        switch (newId) {
+          case "first":
+            vm.getCustomerList();
+            break;
+          case "second":
+            vm.getContractList()
+            break;
+          case "third":
+            break;
+          case "fourth":
+            vm.getSeekingList()
+            break;
+          case "five":
+            vm.getReportList()
+            break;
+          case "six":
+            vm.selectVisitList()
+            break;
+          case "seven":
+            vm.getMsgList()
+            break;
+          default:
+            break;
+        }
+      }
+    },
+    querySearchAsync(queryString, cb) {
+      const query = {
+        customerName: queryString || null,
+      };
+      getIdContract(query).then((res) => {
+        console.log(res);
+        const { data } = res;
+        console.log(typeof data);
+        if (typeof(data)  == 'object') {
+          data.forEach((v) => {
+            v.value = v.customerName;
+          });
+          cb(res.data);
+        }
+      });
+    },
+    handleSelect(item) {
+      const { customerName,customerId,contractCode,contractId } = item;
+      vm.form.customerName = customerName;
+      vm.form.customerId = customerId;
+      if(contractCode){
+        vm.form.contractCode = contractCode;
+      }
+      if(contractId){
+        vm.form.contractId = contractId;
+      }
+    },
+    //运行设备模态框关闭
+    handleClose(done) {
+      vm.$confirm("确认关闭？离开后不会保存已经输入的数据!", {
+        type: "warning",
+      })
+        .then((_) => {
+          done();
+        })
+        .catch((_) => {});
+    },
+  },
+};
+</script>
+
+
+<style lang='scss'>
+  .main{
+    .faqi{
+      color: #CEC551;
+    }
+    .banjie{
+      color: #5BD66A;
+    }
+  }
+</style>
