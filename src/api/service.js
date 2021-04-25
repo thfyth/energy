@@ -120,3 +120,27 @@ export function selectVisit(data){
 export function updataVisit(data){
     return put('admin/servicevisit/update',data)
 }
+
+/* 缴费记录信息 */
+
+
+// 通过合同查询所有缴费记录
+export function selectPayrecord(data){
+    return get('admin/payrecord/selectAll',data)
+}
+// 通过id查询缴费记录信息
+export function getByIdPay(data){
+    return get('admin/payrecord/'+data)
+}
+// 删除缴费记录
+export function delPayrecord(data){
+    return deletefn('admin/payrecord/delete',data)
+}
+// 新增缴费记录
+export function addPayrecord(data){
+    return post('admin/payrecord/insert',data)
+}
+// 更新缴费记录信息
+export function updataPayrecord(data){
+    return put('admin/payrecord/update',data)
+}

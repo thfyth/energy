@@ -8,14 +8,14 @@
               <div class="list-box list-input">
                 <!-- <span class="title">姓名</span> -->
                 <el-input
-                  v-model="query.equipmentName"
-                  placeholder="设备名称"
+                  v-model="query.queryValue"
+                  placeholder="用户信息"
                   style="width: 200px"
                   clearable
                 />
               </div>
               <div class="list-box">
-                <el-button type="primary" plain icon="el-icon-query"
+                <el-button type="primary" @click="getCustomerList" plain icon="el-icon-query"
                   >筛选</el-button
                 >
               </div>
@@ -58,19 +58,17 @@
               <el-table-column
                 prop="contactsType"
                 label="联系方式"
-                width="120"
                 align="center"
               ></el-table-column>
               <el-table-column
                 prop="guessArea"
                 label="预计供能面积"
-                width="120"
                 align="center"
               ></el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="200">
+              <el-table-column align="center" label="操作">
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openCustomer(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -99,26 +97,29 @@
               <div class="list-box list-input">
                 <!-- <span class="title">姓名</span> -->
                 <el-input
-                  v-model="query.equipmentName"
-                  placeholder="设备名称"
+                  v-model="query.queryValue"
+                  placeholder="合同信息"
                   style="width: 200px"
                   clearable
                 />
               </div>
               <div class="list-box">
-                <el-button type="primary" plain icon="el-icon-query"
-                  >筛选</el-button
+                <el-button type="primary" @click="getContractList" plain icon="el-icon-query"
+                  >查询</el-button
                 >
               </div>
             </div>
             <div class="titles-list">
+              <el-button class="insert" @click="addPayFun" type="primary"
+                >新增缴费记录</el-button
+              >
               <el-button class="insert" @click="addContractFun" type="primary"
                 >新建合同</el-button
               >
             </div>
           </div>
           <div class="table-view">
-            <el-table :data="contractData" stripe style="width: 100%">
+            <el-table :data="contractData" @selection-change="handleContractSelection" stripe style="width: 100%">
               <el-table-column type="selection" width="55"></el-table-column>
               <el-table-column type="index" label="序号" width="80">
               </el-table-column>
@@ -157,6 +158,17 @@
               </template>
               </el-table-column>
               <el-table-column
+                prop="payDate"
+                label="缴费日期"
+                width="120"
+                align="center"
+              >
+              <template slot-scope="{row}">
+                <span v-if="row.payDate" class="article" @click="getPayList(row)">{{row.payDate}}</span>
+                <span v-else>---</span>
+              </template>
+              </el-table-column>
+              <el-table-column
                 prop="freightBasis"
                 label="计费标准"
                 width="120"
@@ -177,7 +189,7 @@
               <el-table-column fixed="right" align="center" label="操作" width="200">
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openContract(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -207,14 +219,14 @@
               <div class="list-box list-input">
                 <!-- <span class="title">姓名</span> -->
                 <el-input
-                  v-model="query.equipmentName"
-                  placeholder="设备名称"
+                  v-model="query.queryValue"
+                  placeholder="述求名称"
                   style="width: 200px"
                   clearable
                 />
               </div>
               <div class="list-box">
-                <el-button type="primary" plain icon="el-icon-query"
+                <el-button type="primary" @click="getSeekingList" plain icon="el-icon-query"
                   >筛选</el-button
                 >
               </div>
@@ -269,13 +281,12 @@
               <el-table-column
                 prop="firstEnergySupplyDate"
                 label="首次供能日期"
-                width="120"
                 align="center"
               ></el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="200">
+              <el-table-column align="center" label="操作" >
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openSeeking(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -304,14 +315,14 @@
               <div class="list-box list-input">
                 <!-- <span class="title">姓名</span> -->
                 <el-input
-                  v-model="query.equipmentName"
-                  placeholder="设备名称"
+                  v-model="query.queryValue"
+                  placeholder="报修名称"
                   style="width: 200px"
                   clearable
                 />
               </div>
               <div class="list-box">
-                <el-button type="primary" plain icon="el-icon-query"
+                <el-button type="primary" @click="getReportList" plain icon="el-icon-query"
                   >筛选</el-button
                 >
               </div>
@@ -366,13 +377,12 @@
               <el-table-column
                 prop="firstEnergySupplyDate"
                 label="首次供能日期"
-                width="120"
                 align="center"
               ></el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="200">
+              <el-table-column align="center" label="操作" >
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openReport(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -446,14 +456,13 @@
               <el-table-column
                 prop="endDate"
                 label="办结时间"
-                width="180"
                 align="center"
               ></el-table-column>
               
-              <el-table-column fixed="right" align="center" label="操作" width="200">
+              <el-table-column align="center" label="操作">
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openVisit(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -482,14 +491,14 @@
               <div class="list-box list-input">
                 <!-- <span class="title">姓名</span> -->
                 <el-input
-                  v-model="query.equipmentName"
-                  placeholder="设备名称"
+                  v-model="query.queryValue"
+                  placeholder="消息"
                   style="width: 200px"
                   clearable
                 />
               </div>
               <div class="list-box">
-                <el-button type="primary" plain icon="el-icon-query"
+                <el-button type="primary" @click="getMsgList" plain icon="el-icon-query"
                   >筛选</el-button
                 >
               </div>
@@ -514,7 +523,6 @@
               <el-table-column
                 prop="msgType"
                 label="消息类型"
-                width="120"
                 align="center"
               >
               <template slot-scope="{row}">
@@ -527,20 +535,18 @@
               <el-table-column
                 prop="updateDate"
                 label="更新时间"
-                width="180"
                 align="center"
               ></el-table-column>
               <el-table-column
                 prop="createBy"
                 label="编辑人"
-                width="180"
                 align="center"
               ></el-table-column>
               
-              <el-table-column fixed="right" align="center" label="操作" width="200">
+              <el-table-column align="center" label="操作" >
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" @click="openMsg(row)"
-                    >查看</el-button
+                    >编辑</el-button
                   >
                   <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
@@ -610,7 +616,7 @@
             </div>
             <el-upload
               v-else
-              action="http://192.168.1.52:6004/api/admin/file/uploadFile"
+              action="http://47.92.201.212:6004/api/admin/file/uploadFile"
               :show-file-list="false"
               :on-success="handleUrl"
               name="files"
@@ -784,6 +790,8 @@
           </el-form-item>
           <el-form-item label="消息内容">
             <el-input v-model="form.msgContent" type="textarea" :rows="3"></el-input>
+             <!-- <quill-editor v-model="form.msgContent" :options="editorOption" ref="myQuillEditor1"></quill-editor> -->
+         
           </el-form-item>
           <el-form-item label="附件">
             <!--  -->
@@ -797,7 +805,7 @@
             </div>
             <el-upload
               v-else
-              action="http://192.168.1.52:6004/api/admin/file/uploadFile"
+              action="http://47.92.201.212:6004/api/admin/file/uploadFile"
               :show-file-list="false"
               :on-success="handleMsgUrl"
               name="files"
@@ -849,6 +857,92 @@
           <el-button type="primary" @click="saveVisit">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- 缴费记录 -->
+      <el-dialog
+        title="缴费记录"
+        :visible.sync="payVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="visitForm" :model="form" label-width="120px">
+          <el-form-item label="客户名称">
+            <el-input v-model="form.customerName" disabled></el-input>
+          </el-form-item>
+          <el-form-item  label="合同编号">
+            <el-input v-model="form.contractCode" disabled></el-input>
+          </el-form-item>
+          <el-form-item>
+            <span>缴费记录</span>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="payVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveVisit">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 缴费信息 -->
+      <el-dialog
+        title="缴费信息"
+        :visible.sync="payInfoVisible"
+        width="40%"
+        :before-close="handleClose"
+      >
+        <el-form ref="visitForm" :model="form" label-width="120px">
+          <el-form-item label="缴费时间">
+            <el-date-picker
+              type="datetime"
+              placeholder="选择日期"
+              v-model="form.payDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日 HH时mm分"
+              value-format="yyyy-MM-dd hh-mm"
+            ></el-date-picker>
+          </el-form-item>
+          <el-form-item  label="缴费金额">
+            <el-input v-model.number="form.payMoney"></el-input>
+          </el-form-item>
+          <el-form-item  label="缴费渠道">
+            <el-input v-model="form.payType"></el-input>
+          </el-form-item>
+          <el-form-item  label="到期时间">
+            <el-date-picker
+              type="date"
+              placeholder="选择日期"
+              v-model="form.expireDate"
+              style="width: 100%"
+              format="yyyy 年 MM 月 dd 日"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="payInfoVisible = false">取 消</el-button>
+          <el-button type="primary" @click="savePay">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 缴费信息列表 -->
+      <el-dialog
+        title="缴费列表"
+        :visible.sync="payListVisible"
+        width="30%"
+        :before-close="handleClose"
+      >
+        <div>
+          <template v-for="item in payList">
+            <span
+              class="span-active"
+              @click="getPayInfo(item)"
+              :key="item.payRecordId"
+              v-text="item.payDate"
+            ></span>
+          </template>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="payListVisible = false"
+            >退 出</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -856,6 +950,13 @@
 let vm;
 import { delFiles } from "@/api/file";
 import { getToken } from "@/utils/auth";
+
+import { quillEditor } from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+
+
 
 import {
   /* 合同 */
@@ -887,12 +988,41 @@ import {
   /* 服务回访 */
   delVisit,
   selectVisit,
-  updataVisit
+  updataVisit,
+  /* 缴费 */
+  selectPayrecord,
+  getByIdPay,
+  delPayrecord,
+  addPayrecord,
+  updataPayrecord
 } from "@/api/service";
 
+const toolbarOption = [
+  ["bold", "italic", "underline", "strike"], //加粗，斜体，下划线，删除线
+  ["blockquote", "code-block"], //引用，代码块
+  [{ header: 1 }, { header: 2 }], // 标题，键值对的形式；1、2表示字体大小
+  [{ list: "ordered" }, { list: "bullet" }], //列表
+  [{ script: "sub" }, { script: "super" }], // 上下标
+  [{ indent: "-1" }, { indent: "+1" }], // 缩进
+  [{ direction: "rtl" }], // 文本方向
+  [{ size: ["small", false, "large", "huge"] }], // 字体大小
+  [{ header: [1, 2, 3, 4, 5, 6, false] }], //几级标题
+  [{ color: [] }, { background: [] }], // 字体颜色，字体背景颜色
+  [{ font: [] }], //字体
+  [{ align: [] }], //对齐方式
+  ["clean"], //清除字体样式
+  ["image", "video"], //上传图片、上传视频
+];
 export default {
   data() {
     return {
+      editorOption: {
+        modules: {
+          toolbar: {
+            container: toolbarOption,
+          },
+        }, //编辑器配置项
+      }, //编辑器配置项
       query: {
         pageNumber: 1,
         pageSize: 20,
@@ -930,6 +1060,11 @@ export default {
         { value: 0, label: "发起" },
         { value: 1, label: "办结" },
       ],
+      /* 缴费记录 */
+      payVisible: false,
+      payInfoVisible: false,
+      payListVisible: false,
+      payList: [],
       /* 通用 */
       form: {},
       total: 0,
@@ -938,6 +1073,8 @@ export default {
       },
       //用户操作 true为新增，false为修改
       option: true,
+      //合同ID
+      comContractId:null
     };
   },
   created() {
@@ -948,7 +1085,7 @@ export default {
     // vm.getReportList()
     // vm.getMsgList()
   },
-  components: {},
+  components: {quillEditor},
   methods: {
     //通用重置
     resetQuery() {
@@ -1344,6 +1481,71 @@ export default {
       })
     },
 
+    /* 缴费记录 */
+    addPayFun(){
+      if(!vm.comContractId){
+        vm.$message.error('请选择一个合同进行缴费');
+        return
+      }
+      vm.form = {
+        contractId:vm.comContractId
+      };
+      vm.option = true;
+      vm.payInfoVisible = true;
+    },
+    //保存缴费信息
+    savePay(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addPayrecord(vm.form);
+      } else {
+        //修改
+        data = updataPayrecord(vm.form);
+      }
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.$message.success(res.message);
+          vm.payInfoVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+    //合同多选
+    handleContractSelection(e){
+      const { contractId } = e[0];
+      if(contractId) vm.comContractId = contractId;
+      else vm.comContractId = null;
+    },
+    //获取缴费信息
+    getPayList(row){
+      const { contractId} = row;
+      selectPayrecord({contractId}).then(res=>{
+        if(res.code === 0){
+          vm.payList = res.data;
+          vm.payListVisible = true;
+        }
+      })
+    },
+    //获取缴费详细信息
+    getPayInfo(row){
+      console.log(row);
+      vm.option = false;
+      const { payRecordId  } = row;
+      getByIdPay(payRecordId).then(res=>{
+        if(res.code === 0){
+          vm.form = res.data;
+          vm.payInfoVisible = true;
+        }
+      })
+    },
+    
+
+
+
+
+
     //切换TAB
     handleLeave(newId) {
       vm.query={
@@ -1408,13 +1610,17 @@ export default {
     },
     //运行设备模态框关闭
     handleClose(done) {
-      vm.$confirm("确认关闭？离开后不会保存已经输入的数据!", {
-        type: "warning",
-      })
-        .then((_) => {
-          done();
+      if (vm.option) {
+        vm.$confirm("确认关闭？离开后不会保存已经输入的数据!", {
+          type: "warning",
         })
-        .catch((_) => {});
+          .then((_) => {
+            done();
+          })
+          .catch((_) => {});
+      } else {
+        done();
+      }
     },
   },
 };

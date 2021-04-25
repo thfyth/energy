@@ -74,12 +74,15 @@ div:focus {
 .span-active{
   color: Blue;
   cursor: pointer;
+  display: block;
+  margin-bottom: 10px;
 }
 .main,.model{
   padding: 10px 30px;
   .title-box{
     display: flex;
     justify-content: space-between;
+    margin-bottom: 10px;
     .title-list{
       display: flex;
       align-items: center;

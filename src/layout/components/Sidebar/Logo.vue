@@ -24,8 +24,9 @@ export default {
   },
   data() {
     return {
-      title: '绩效考核系统',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      // title: '高铁新城区域能源站管理展示系统',
+      title: '高铁新城区域能源站管理',
+      logo: require('../../../assets/404_images/logo.png')
     }
   }
 }
@@ -66,7 +67,7 @@ export default {
       margin: 0;
       color: #fff;
       font-weight: 600;
-      line-height: 50px;
+      // line-height: 50px;
       font-size: 14px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;

@@ -7,7 +7,8 @@ const getDefaultState = () => {
     token: getToken(),
     name: '',
     avatar: '',
-    roles: []
+    roles: [],
+    userId:''
   }
 }
 
@@ -23,12 +24,15 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
+  SET_USERID: (state, userId) => {
+    state.userId = userId
+  },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
-  }
+  },
 }
 
 const actions = {
@@ -39,10 +43,13 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ userName:username, password,grantType }).then(response => {
         const { data } = response
-        const { refresh_token,token,username } = data;
+        const { refresh_token,token,username,userId } = data;
         commit('SET_TOKEN', token)
-        console.log(username);
         commit('SET_NAME', username)
+        commit('SET_USERID',userId);
+        //保存用户ID和姓名到本地存储
+        localStorage.setItem('userId',userId);
+        localStorage.setItem('username',username);
         setToken(token)
         resolve()
       }).catch(error => {
@@ -57,9 +64,12 @@ const actions = {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
         const { data } = response
+        console.log(data);
         //设置权限
         const menuList = getFirst(data)
         commit('SET_ROLES', getRoleId(data))
+        commit('SET_NAME', localStorage.getItem('username'))
+        commit('SET_USERID', localStorage.getItem('userId'));
         // commit('SET_MENU_LIST', getFirst(data))
         //设置名字
         //设置头像
@@ -77,6 +87,7 @@ const actions = {
       logout().then(() => {
         removeToken() // must remove  token  first
         resetRouter()
+        localStorage.clear();
         commit('RESET_STATE')
         resolve()
       }).catch(error => {

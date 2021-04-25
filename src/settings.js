@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '绩效考核系统',
+  title: '高铁新城区域能源站管理展示系统',
 
   /**
    * @type {boolean} true | false

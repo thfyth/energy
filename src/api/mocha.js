@@ -26,6 +26,13 @@ export function updataEqu(data){
     return put('admin/equipmentruning/update',data)
 }
 
+//设备运行审批
+export function approvalEqu(data){
+    return get('admin/equipmentruning/approval',data)
+}
+
+
+
 /* 设备验收 */
 
 // 通过id查询设备验收信息
@@ -48,7 +55,10 @@ export function selectAcc(data){
 export function updataAcc(data){
     return put('admin/equipment/update',data)
 }
-
+// 获取设备类别
+export function getEquipmentType(data){
+    return get('admin/equipment/getEquipmentType',data)
+}
 
 /* 设备库 */
 
@@ -98,6 +108,11 @@ export function selectInspectplan(data){
 export function updataInspectplan(data){
     return put('admin/inspectplan/update',data)
 }
+//巡检审批
+export function approvalInsp(data){
+    return get('admin/inspectplan/approval',data)
+}
+
 
 //通过id查询巡检记录信息
 export function getByIdRecord(data){
@@ -117,6 +132,8 @@ export function selectRecord(data){
 export function updataRecord(data){
     return put('admin/inspectrecord/update',data)
 }
+
+
 
 /* 缺陷报告 */
 
@@ -142,6 +159,12 @@ export function getByIdDefect(data){
     return get('admin/defectreport/'+data)
 }
 
+//新增缺陷报告审批
+export function approvalDefct(data){
+    return get('admin/defectreport/approval',data)
+}
+
+
 /* 维修计划 */
 
 //通过id查询维修计划信息
@@ -164,6 +187,11 @@ export function selectRepair(data){
 export function updataRepair(data){
     return put('admin/repair/update',data)
 }
+//维修计划审批
+export function approvalRepair(data){
+    return get('admin/repair/approval',data)
+}
+
 
 //通过id查询维修记录信息
 export function getByIdRepairRecord(data){
@@ -209,7 +237,10 @@ export function delScrap(data){
 export function getByIdScrap(data){
     return get('admin/scrap/'+data)
 }
-
+//报废计划审批
+export function approvalScrap(data){
+    return get('admin/scrap/approval',data)
+}
 // 报废记录
 
 //通过id查询报废记录信息
@@ -256,6 +287,10 @@ export function selectMaintenance(data){
 export function updataMaintenance(data){
     return put('admin/maintenance/update',data)
 }
+//维护审批
+export function approvalMainten(data){
+    return get('admin/maintenance/approval',data)
+}
 
 //新增维护保养记录
 export function addMaintenanceRecord(data){
@@ -276,5 +311,65 @@ export function selectMaintenanceRecord(data){
 //更新维护保养记录信息
 export function updataMaintenanceRecord(data){
     return put('admin/maintenancerecord/update',data)
+}
+/* 台账管理 */
+
+
+//查询台账详细信息
+export function getStandingbookDetail(data){
+    return get('admin/standingbook/getDetail',data)
+}
+//查询台账信息
+export function selectStandingbook(data){
+    return get('admin/standingbook/getRecord',data)
+}
+//修改台账信息
+export function updataStandingbook(data){
+    return post('admin/standingbook/update',data)
+}
+//删除台账信息
+export function delStandingbook(data){
+    return get('admin/standingbook/delete',data)
+}
+//自动检查设备运行状态
+export function findRuningStatus(data){
+    return get('admin/standingbook/findRuningStatus',data)
+}
+
+
+/* 能源站、区域管理 */
+
+//查询能源站
+export function selectEnergyStation(data){
+    return get('admin/energystation/selectAll',data)
+}
+//删除能源站
+export function delEnergyStation(data){
+    return deletefn('admin/energystation/delete',data)
+}
+//新增一个能源站
+export function addEnergyStation(data){
+    return post('admin/energystation/insert',data)
+}
+//更新能源站
+export function updataEnergyStation(data){
+    return put('admin/energystation/update',data)
+}
+
+//查询区域
+export function selectArea(data){
+    return get('admin/area/selectAll',data)
+}
+//删除区域
+export function delArea(data){
+    return deletefn('admin/area/delete',data)
+}
+//新增一个区域
+export function addArea(data){
+    return post('admin/area/insert',data)
+}
+//更新一个区域
+export function updataArea(data){
+    return put('admin/area/update',data)
 }
 

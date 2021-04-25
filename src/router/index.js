@@ -30,6 +30,7 @@ export const constantRoutes = [
     path: '/adminAddInfo',
     name: 'adminAddInfo',
     component: Layout,
+    hidden:true,
     
     meta: { title: '菜单设置', icon: 'dashboard' },
     children: [

@@ -26,8 +26,10 @@ const hideLoading = () => {
 const service = axios.create({
 	timeout: 20000, // 超时时间
 	// baseURL: 'http://192.168.1.105:9004/api/', // 公共地址
-	baseURL: 'http://192.168.1.52:6004/api/', // 公共地址
+	// baseURL: 'http://192.168.1.52:6004/api/', // 公共地址
 	// baseURL: 'http://47.92.201.212:6004/api/', // 公共地址
+	baseURL: 'http://kppntm.natappfree.cc/api/', // 公共地址
+	
 	// /swagger-ui.html
 })
 
@@ -58,6 +60,7 @@ service.interceptors.response.use(
 		const res = response.data;
 		hideLoading()
 		if (res.code === -1) {
+			localStorage.clear();
 			store.dispatch('user/resetToken').then(() => {
 				router.replace({
 					path: '/login',
