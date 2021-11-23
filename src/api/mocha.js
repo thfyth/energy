@@ -132,8 +132,10 @@ export function selectRecord(data){
 export function updataRecord(data){
     return put('admin/inspectrecord/update',data)
 }
-
-
+//通过设备id查看巡检记录
+export function getInspByEquipmentId(data){
+    return get('admin/inspectrecord/getListByEquipmentId',data)
+}
 
 /* 缺陷报告 */
 
@@ -163,8 +165,10 @@ export function getByIdDefect(data){
 export function approvalDefct(data){
     return get('admin/defectreport/approval',data)
 }
-
-
+//通过设备id查看缺陷报告记录
+export function getDefceListByEquipmentId(data){
+    return get('admin/defectreport/getListByEquipmentId',data)
+}
 /* 维修计划 */
 
 //通过id查询维修计划信息
@@ -213,7 +217,10 @@ export function selectRepairRecord(data){
 export function updataRepairRecord(data){
     return put('admin/repairrecord/update',data)
 }
-
+//通过设备id查看维修记录
+export function getRepairListByEquipmentId(data){
+    return get('admin/repairrecord/getListByEquipmentId',data)
+}
 
 /* 报废计划 */
 
@@ -312,6 +319,13 @@ export function selectMaintenanceRecord(data){
 export function updataMaintenanceRecord(data){
     return put('admin/maintenancerecord/update',data)
 }
+//通过设备id查看维护保养记录
+export function getMaintListByEquipmentId(data){
+    return get('admin/maintenancerecord/getListByEquipmentId',data)
+}
+
+
+
 /* 台账管理 */
 
 
@@ -373,3 +387,18 @@ export function updataArea(data){
     return put('admin/area/update',data)
 }
 
+/* 设备类别 */
+
+
+//删除设备类别
+export function delequType(data){
+    return deletefn('admin/equipmentType/delete',data)
+}
+//新增设备类别
+export function addequType(data){
+    return post('admin/equipmentType/insert',data)
+}
+//更新设备类别
+export function updataequType(data){
+    return put('admin/equipmentType/update',data)
+}

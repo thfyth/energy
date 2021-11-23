@@ -120,6 +120,11 @@ export function selectVisit(data){
 export function updataVisit(data){
     return put('admin/servicevisit/update',data)
 }
+// 查询服务回访详细
+export function selectServerDetail(data){
+    return get('admin/servicevisit/selectDetail',data)
+}
+
 
 /* 缴费记录信息 */
 

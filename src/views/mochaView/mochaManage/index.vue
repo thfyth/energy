@@ -25,7 +25,7 @@
                   type="primary"
                   plain
                   icon="el-icon-query"
-                  @click="gettableData"
+                  @click="getStandList"
                   >查询</el-button
                 >
               </div>
@@ -58,16 +58,48 @@
                 prop="equipmentName"
                 label="设备名称"
               ></el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
 
-              <el-table-column
-                prop="inspectCount"
-                label="巡检记录"
-              ></el-table-column>
+              <el-table-column prop="inspectCount" label="巡检记录">
+                <template slot-scope="{ row }">
+                  <span
+                    v-text="row.inspectCount"
+                    class="article"
+                    @click="viewInspectCycleById(row)"
+                  ></span>
+                </template>
+              </el-table-column>
               <el-table-column prop="defectCount" label="缺陷报告">
+                
+                <template slot-scope="{ row }">
+                  <span
+                    v-text="row.defectCount"
+                    class="article"
+                    @click="viewfectById(row)"
+                  ></span>
+                </template>
               </el-table-column>
               <el-table-column prop="maintenanceCount" label="维护保养">
+                <template slot-scope="{ row }">
+                  <span
+                    v-text="row.maintenanceCount"
+                    class="article"
+                    @click="viewMaintenanceById(row)"
+                  ></span>
+                </template>
               </el-table-column>
               <el-table-column prop="repairCount" label="维修记录">
+                <template slot-scope="{ row }">
+                  <span
+                    v-text="row.repairCount"
+                    class="article"
+                    @click="viewRecordById(row)"
+                    
+                  ></span>
+                </template>
               </el-table-column>
               <el-table-column prop="equipmentStatus" label="设备状态">
               </el-table-column>
@@ -84,14 +116,14 @@
                   <el-button type="text" size="small" @click="viewStandFun(row)"
                     >编辑</el-button
                   >
-                  <el-popconfirm
+                  <!-- <el-popconfirm
                     title="删除后无法恢复,是否继续删除？"
                     @onConfirm="delMaintFun(row)"
                   >
                     <el-button type="text" size="small" slot="reference"
                       >删除</el-button
                     >
-                  </el-popconfirm>
+                  </el-popconfirm> -->
                 </template>
               </el-table-column>
             </el-table>
@@ -158,45 +190,39 @@
               </el-table-column>
               <el-table-column prop="equipmentName" label="设备名称">
               </el-table-column>
+              <el-table-column label="设备编号" prop="equipmentCode">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
               <el-table-column label="缺陷描述" prop="defectPosition">
+              </el-table-column>
+
+              <el-table-column label="创建人" prop="createByName">
               </el-table-column>
               <el-table-column label="发现时间" prop="findTime">
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="250">
+              <el-table-column
+                fixed="right"
+                align="center"
+                label="操作"
+                width="250"
+              >
                 <template slot-scope="{ row }">
-                  <el-popover
-                    v-if="
-                      row.status == 1 && row.approvedUserId == userId
-                    "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                  <el-button
+                    type="text"
+                    v-if="row.status == 1 && row.approvedUserId == userId"
+                    size="small"
+                    @click="openDefectModel(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalDefectFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalDefectFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button type="text" size="small" @click="openDefect(row)"
                     >编辑</el-button
                   >
@@ -285,9 +311,15 @@
                 prop="equipmentName"
                 label="设备名称"
               ></el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
+              <el-table-column label="创建人" prop="createByName">
+              </el-table-column>
               <el-table-column prop="maintenancePosition" label="维护部位">
               </el-table-column>
-              <el-table-column label="最新维修记录">
+              <el-table-column label="最新保养记录">
                 <template slot-scope="{ row }">
                   <span
                     v-text="row.recordDate"
@@ -298,39 +330,26 @@
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="250">
+              <el-table-column
+                fixed="right"
+                align="center"
+                label="操作"
+                width="250"
+              >
                 <template slot-scope="{ row }">
-                  <el-popover
-                    v-if="
-                      row.status == 1 && row.approvedUserId == userId
-                    "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                  <el-button
+                    type="text"
+                    v-if="row.status == 1 && row.approvedUserId == userId"
+                    size="small"
+                    @click="openMaintFunModel(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalMaintFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalMaintFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button type="text" size="small" @click="openMaintFun(row)"
                     >编辑</el-button
                   >
@@ -410,12 +429,18 @@
               </el-table-column>
               <el-table-column
                 prop="planName"
-                label="巡检计划"
+                label="维修计划"
               ></el-table-column>
               <el-table-column
                 prop="equipmentName"
                 label="设备名称"
               ></el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
+              <el-table-column label="创建人" prop="createByName">
+              </el-table-column>
               <el-table-column prop="repairType" label="维修部位">
                 <template slot-scope="{ row }">
                   <span v-if="row.repairType == 1">日常维修</span>
@@ -439,39 +464,26 @@
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="250">
+              <el-table-column
+                fixed="right"
+                align="center"
+                label="操作"
+                width="250"
+              >
                 <template slot-scope="{ row }">
-                  <el-popover
-                    v-if="
-                      row.status == 1 && row.approvedUserId == userId
-                    "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                  <el-button
+                    v-if="row.status == 1 && row.approvedUserId == userId"
+                    type="text"
+                    size="small"
+                    @click="openRepairFunModel(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalRepairFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalRepairFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button
                     type="text"
                     size="small"
@@ -555,10 +567,16 @@
                 prop="equipmentName"
                 label="设备名称"
               ></el-table-column>
-              <el-table-column
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
+              <el-table-column label="创建人" prop="createByName">
+              </el-table-column>
+              <!-- <el-table-column
                 prop="repairPosition"
                 label="设备类型"
-              ></el-table-column>
+              ></el-table-column> -->
               <el-table-column
                 prop="scrapReason"
                 label="报废原因"
@@ -575,39 +593,26 @@
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
-              <el-table-column fixed="right" align="center" label="操作" width="250">
+              <el-table-column
+                fixed="right"
+                align="center"
+                label="操作"
+                width="250"
+              >
                 <template slot-scope="{ row }">
-                  <el-popover
-                    v-if="
-                      row.status == 1 && row.approvedUserId == userId
-                    "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                  <el-button
+                    type="text"
+                    v-if="row.status == 1 && row.approvedUserId == userId"
+                    size="small"
+                    @click="openScrapFunModel(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalScrapFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalScrapFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button type="text" size="small" @click="openScrapFun(row)"
                     >编辑</el-button
                   >
@@ -683,6 +688,11 @@
                 label="能源站名称"
               ></el-table-column>
               <el-table-column
+                prop="energyStationCode"
+                label="能源站编号"
+              ></el-table-column>
+              
+              <el-table-column
                 prop="areaName"
                 label="区域名称"
               ></el-table-column>
@@ -725,6 +735,74 @@
               :total="energyTotal"
             >
             </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+      <el-tab-pane label="设备类别管理" name="night">
+         <div class="main">
+          <div class="title-box" style="width: auto">
+           
+            <div class="titles-list">
+              <el-button class="insert" @click="addequTypeFun" type="primary"
+                >新增设备类别</el-button
+              >
+            </div>
+          </div>
+          <div class="table-view">
+            <el-table
+              :data="equipmentTypeList"
+              stripe
+              element-loading-text="Loading"
+              tooltip-effect="dark"
+              formatter
+              row-key="typeId"
+              :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+              :header-cell-style="{ background: '#F7F8FA', color: '#293B59' }"
+            >
+              <!-- <el-table-column
+                type="selection"
+                width="55"
+                align="center"
+              ></el-table-column> -->
+              <el-table-column type="index" width="100" label="序号">
+              </el-table-column>
+              <el-table-column
+                prop="typeName"
+                label="类型名称"
+              ></el-table-column>
+              <el-table-column
+                prop="typeCode"
+                label="类型编号"
+              ></el-table-column>
+              <!-- <el-table-column
+                prop="createDate"
+                label="创建时间"
+              ></el-table-column> -->
+              <el-table-column fixed="right" label="操作" width="250">
+                <template slot-scope="{ row }">
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="editEquTypeFun(row)"
+                    >编辑</el-button
+                  >
+                  <el-button
+                    type="text"
+                    size="small"
+                    @click="addequTypeChildren(row)"
+                    >新增下级</el-button
+                  >
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delEquTypeFun(row)"
+                  >
+                    <el-button type="text" size="small" slot="reference"
+                      >删除</el-button
+                    >
+                  </el-popconfirm>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
         </div>
       </el-tab-pane>
@@ -780,6 +858,13 @@
               </el-table-column>
               <el-table-column prop="equipmentName" label="设备名称">
               </el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column prop="energyStationName" label="能源站">
+              </el-table-column>
+              
+              <el-table-column prop="createDate" label="创建时间">
+              </el-table-column>
               <el-table-column label="检验结果">
                 <template slot-scope="{ row }">
                   <span v-if="row.inspectState == 0">不合适</span>
@@ -793,9 +878,14 @@
                   <el-button type="text" size="small" @click="openModeAcc(row)"
                     >编辑</el-button
                   >
-                  <el-button type="text" size="small" @click="delAccFun(row)"
-                    >删除</el-button
+                  <el-popconfirm
+                    title="删除后无法恢复,是否继续删除？"
+                    @onConfirm="delAccFun(row)"
                   >
+                    <el-button type="text" size="small" slot="reference"
+                      >删除</el-button
+                    >
+                  </el-popconfirm>
                 </template>
               </el-table-column>
             </el-table>
@@ -860,6 +950,13 @@
               </el-table-column>
               <el-table-column prop="equipmentName" label="设备名称">
               </el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
+              <el-table-column prop="createByName" label="执行人">
+              </el-table-column>
+
               <el-table-column label="运行状态">
                 <template slot-scope="{ row }">
                   <span>{{ row.runingStatus }}</span>
@@ -867,39 +964,23 @@
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
               <el-table-column align="center" label="操作" width="250">
                 <template slot-scope="{ row }">
-                  <el-popover
+                  <el-button
+                    type="text"
                     v-if="
                       row.approvalStatus == 1 && row.approvalUserId == userId
                     "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                    size="small"
+                    @click="approvalModeRun(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalEquFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalEquFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button type="text" size="small" @click="openModeRun(row)"
                     >编辑</el-button
                   >
@@ -977,11 +1058,29 @@
                 prop="equipmentName"
                 label="设备名称"
               ></el-table-column>
+              <el-table-column prop="equipmentCode" label="设备编号">
+              </el-table-column>
+              <el-table-column width="200" prop="energyStationName" label="能源站">
+              </el-table-column>
               <el-table-column label="巡检周期" prop="inspectCycle">
+                <template slot-scope="{ row }">
+                  <span v-if="row.inspectCycle == 0">每日</span>
+                  <span v-if="row.inspectCycle == 1">每周</span>
+                  <span v-if="row.inspectCycle == 2">每月</span>
+                  <span v-if="row.inspectCycle == 3">每年</span>
+                </template>
               </el-table-column>
               <el-table-column
                 prop="inspectPosition"
                 label="检查部位"
+              ></el-table-column>
+              <el-table-column
+                prop="equipmentCode"
+                label="设备编号"
+              ></el-table-column>
+              <el-table-column
+                prop="createByName"
+                label="创建人"
               ></el-table-column>
               <el-table-column prop="inspectDate" label="最新巡检记录">
                 <template slot-scope="{ row }">
@@ -994,7 +1093,9 @@
               </el-table-column>
               <el-table-column prop="approvalStatus" label="流程审批">
                 <template slot-scope="{ row }">
-                  <span v-if="row.approvalStatusName">{{row.approvalStatusName}}</span>
+                  <span v-if="row.approvalStatusName">{{
+                    row.approvalStatusName
+                  }}</span>
                   <span v-else>---</span>
                 </template>
               </el-table-column>
@@ -1006,33 +1107,13 @@
               </el-table-column> -->
               <el-table-column fixed="right" label="操作" width="250">
                 <template slot-scope="{ row }">
-                  <el-popover
-                    v-if="
-                      row.status == 1 && row.approvedUserId == userId
-                    "
-                    placement="bottom"
-                    width="160"
-                    trigger="click"
+                  <el-button
+                    type="text"
+                    v-if="row.status == 1 && row.approvedUserId == userId"
+                    size="small"
+                    @click="approvalModeInsp(row)"
+                    >审批</el-button
                   >
-                    <p>对该申请进行审批</p>
-                    <div style="text-align: center; margin: 0">
-                      <el-button
-                        size="mini"
-                        type="text"
-                        @click="approvalInspFun(row, 2)"
-                        >不通过</el-button
-                      >
-                      <el-button
-                        type="primary"
-                        size="mini"
-                        @click="approvalInspFun(row, 3)"
-                        >通过</el-button
-                      >
-                    </div>
-                    <el-button type="text" size="small" slot="reference"
-                      >审批</el-button
-                    >
-                  </el-popover>
                   <el-button type="text" size="small" @click="openModeInsp(row)"
                     >编辑</el-button
                   >
@@ -1068,7 +1149,7 @@
     <div class="model">
       <!-- 运行策略 -->
       <el-dialog
-        title="运行策略"
+        title="设备运行记录"
         :visible.sync="runVisible"
         width="30%"
         :before-close="runClose"
@@ -1076,12 +1157,24 @@
         <div>
           <el-form ref="form" :model="form" label-width="80px">
             <el-form-item label="设备编号">
-              <el-autocomplete
+              <!-- <el-autocomplete
                 v-model="form.equipmentCode"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="请输入内容"
                 @select="handleSelect"
-              ></el-autocomplete>
+              ></el-autocomplete> -->
+               <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
+                <el-option
+                  v-for="item in equNameList"
+                  :key="item.equipmentId"
+                  :label="item.equipmentCode"
+                  :value="item"
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName" disabled></el-input>
@@ -1089,10 +1182,10 @@
             <el-form-item label="运行状态">
               <el-input v-model="form.runingStatus"></el-input>
             </el-form-item>
-            <el-form-item label="运行详情">
+            <el-form-item label="项目">
               <el-input v-model="form.runingDetail"></el-input>
             </el-form-item>
-            <el-form-item label="处理内容">
+            <el-form-item label="内容">
               <el-input
                 v-model="form.dealContent"
                 type="textarea"
@@ -1120,10 +1213,7 @@
               ></el-date-picker>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvalUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvalUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -1137,8 +1227,13 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="runVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveRunEqu">保 存</el-button>
-          <el-button type="primary" @click="submitRunEqu">提 交</el-button>
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalEquFun">通 过</el-button>
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveRunEqu">保 存</el-button>
+            <el-button type="primary" @click="submitRunEqu">提 交</el-button>
+          </template>
         </span>
       </el-dialog>
       <!-- 验收信息 -->
@@ -1153,10 +1248,7 @@
             <el-form-item label="设备库">
               <el-row>
                 <el-col :span="12">
-                  <el-select
-                    v-model="form.equipmentLibId"
-                    placeholder="设备库"
-                  >
+                  <el-select v-model="form.equipmentLibId" placeholder="设备库">
                     <el-option
                       v-for="item in libOptions"
                       :key="item.equipmentLibId"
@@ -1171,8 +1263,23 @@
                 </el-col>
               </el-row>
             </el-form-item>
-            <el-form-item label="设备类别">
+            <el-form-item label="能源站">
               <el-select
+                style="width:80%"
+                v-model="form.energyStationId"
+                placeholder="请选择能源站"
+              >
+                <el-option
+                  v-for="item in energyData"
+                  :key="item.energyStationId"
+                  :label="item.energyStationName"
+                  :value="item.energyStationId"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="设备类别">
+              <!-- <el-select
                 v-model="equipmentType"
                 placeholder="请选择设备类别"
                 @change="setChangeSelect"
@@ -1186,11 +1293,18 @@
                   :value="item.typeCode"
                 >
                 </el-option>
-              </el-select>
+              </el-select> -->
+              <el-cascader
+              style="width:80%"
+              v-model="form.deviceCategoryList"
+              :props="equPorps"
+              @change="setChangeSelect"
+              :options="equipmentTypeList">
+              </el-cascader>
             </el-form-item>
-            <el-form-item label="设备编号">
+            <!-- <el-form-item label="设备编号">
               <el-input disabled v-model="form.equipmentCode"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName"></el-input>
             </el-form-item>
@@ -1204,21 +1318,6 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="能源站">
-              <el-select
-                v-model="form.energyStationId"
-                placeholder="请选择能源站"
-              >
-                <el-option
-                  v-for="item in energyData"
-                  :key="item.energyStationId"
-                  :label="item.energyStationName"
-                  :value="item.energyStationId"
                 >
                 </el-option>
               </el-select>
@@ -1247,10 +1346,7 @@
               ></el-input>
             </el-form-item>
             <el-form-item label="检验结果">
-              <el-select
-                v-model="form.inspectState"
-                placeholder="检验结果"
-              >
+              <el-select v-model="form.inspectState" placeholder="检验结果">
                 <el-option
                   v-for="item in isAdopt"
                   :key="item.value"
@@ -1299,10 +1395,7 @@
               <el-input v-model="form.planName"></el-input>
             </el-form-item>
             <el-form-item label="设备库">
-              <el-select
-                v-model="form.equipmentLibId"
-                placeholder="设备库"
-              >
+              <el-select v-model="form.equipmentLibId" placeholder="设备库">
                 <el-option
                   v-for="item in libOptions"
                   :key="item.equipmentLibId"
@@ -1313,18 +1406,30 @@
               </el-select>
             </el-form-item>
             <el-form-item label="设备编号">
-              <el-autocomplete
+              <!-- <el-autocomplete
                 v-model="form.equipmentCode"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="请输入内容"
                 @select="handleSelect"
-              ></el-autocomplete>
+              ></el-autocomplete> -->
+              <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
+                <el-option
+                  v-for="item in equNameList"
+                  :key="item.equipmentId"
+                  :label="item.equipmentCode"
+                  :value="item"
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName" disabled></el-input>
             </el-form-item>
             <el-form-item label="巡检周期">
-              <el-select v-model="form.inspectCycle" placeholder="巡检周期">
+              <el-select v-model.number="form.inspectCycle" placeholder="巡检周期">
                 <el-option
                   v-for="item in inspType"
                   :key="item.value"
@@ -1338,10 +1443,7 @@
               <el-input v-model="form.inspectPosition"></el-input>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvedUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvedUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -1382,8 +1484,13 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="inspVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveInsp">保 存</el-button>
-          <el-button type="primary" @click="submitInsp">提 交</el-button>
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalInspFun">通 过</el-button>
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveInsp">保 存</el-button>
+            <el-button type="primary" @click="submitInsp">提 交</el-button>
+          </template>
         </span>
       </el-dialog>
       <!-- 巡检记录 -->
@@ -1468,8 +1575,9 @@
               class="span-active"
               @click="getPairInfo(item)"
               :key="item.recordId"
-              v-text="item.inspectDate"
-            ></span>
+            >
+            {{item.inspectDate}} --- 创建人：{{item.createByName}}
+            </span>
           </template>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -1480,7 +1588,7 @@
       </el-dialog>
       <!-- 缺陷报告 -->
       <el-dialog
-        title="巡检记录"
+        title="缺陷报告"
         :visible.sync="defectVisible"
         width="30%"
         :before-close="runClose"
@@ -1488,12 +1596,24 @@
         <div>
           <el-form ref="form" :model="form" label-width="120px">
             <el-form-item label="设备编号">
-              <el-autocomplete
+              <!-- <el-autocomplete
                 v-model="form.equipmentCode"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="请输入内容"
                 @select="handleSelect"
-              ></el-autocomplete>
+              ></el-autocomplete> -->
+              <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
+                <el-option
+                  v-for="item in equNameList"
+                  :key="item.equipmentId"
+                  :label="item.equipmentCode"
+                  :value="item"
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName" disabled></el-input>
@@ -1512,10 +1632,7 @@
               </el-date-picker>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvedUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvedUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -1557,8 +1674,15 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="defectVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveDefect">保 存</el-button>
-          <el-button type="primary" @click="submitDefect">提 交</el-button>
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalDefectFun"
+              >通 过</el-button
+            >
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveDefect">保 存</el-button>
+            <el-button type="primary" @click="submitDefect">提 交</el-button>
+          </template>
         </span>
       </el-dialog>
       <!-- 维修计划 -->
@@ -1574,7 +1698,11 @@
               <el-input v-model="form.planName"></el-input>
             </el-form-item>
             <el-form-item label="设备库">
-              <el-select v-model="form.equipmentId"  @change="selectEquList" placeholder="设备库">
+              <el-select
+                v-model="form.equipmentLibId"
+                @change="selectEquList"
+                placeholder="设备库"
+              >
                 <el-option
                   v-for="item in libOptions"
                   :key="item.equipmentLibId"
@@ -1585,12 +1713,24 @@
               </el-select>
             </el-form-item>
             <el-form-item label="设备编号">
-              <el-autocomplete
+              <!-- <el-autocomplete
                 v-model="form.equipmentCode"
                 :fetch-suggestions="querySearchAsync"
                 placeholder="请输入内容"
                 @select="selectEquName"
-              ></el-autocomplete>
+              ></el-autocomplete> -->
+              <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
+                <el-option
+                  v-for="item in equNameList"
+                  :key="item.equipmentId"
+                  :label="item.equipmentCode"
+                  :value="item"
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
+                </el-option>
+              </el-select>
             </el-form-item>
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName" disabled></el-input>
@@ -1610,10 +1750,7 @@
               <el-input v-model="form.repairPosition"></el-input>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvedUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvedUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -1654,8 +1791,15 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="repairlVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveRepairl">保 存</el-button>
-          <el-button type="primary" @click="submitRepairl">提 交</el-button>
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalRepairFun"
+              >通 过</el-button
+            >
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveRepairl">保 存</el-button>
+            <el-button type="primary" @click="submitRepairl">提 交</el-button>
+          </template>
         </span>
       </el-dialog>
       <!-- 维修记录 -->
@@ -1751,8 +1895,9 @@
               class="span-active"
               @click="getRepRecrdInfo(item)"
               :key="item.recordId"
-              v-text="item.repairDate"
-            ></span>
+            >
+            {{item.repairDate}} --- 创建人：{{item.createByName}}
+            </span>
           </template>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -1795,17 +1940,16 @@
                 placeholder="请输入内容"
                 @select="handleSelect"
               ></el-autocomplete> -->
-              <el-select
-                v-model="form.equipmentCode"
-                placeholder="设备"
-                @change="selectEquName"
-              >
+              <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
                 <el-option
-                  v-for="item in equList"
+                  v-for="item in equNameList"
                   :key="item.equipmentId"
-                  :label="item.equipmentName"
+                  :label="item.equipmentCode"
                   :value="item"
-                >
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
                 </el-option>
               </el-select>
             </el-form-item>
@@ -1816,10 +1960,7 @@
               <el-input v-model="form.scrapReason"></el-input>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvedUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvedUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -1860,8 +2001,15 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="scrapVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveScrap">保 存</el-button>
-          <el-button type="primary" @click="submitScrap">提 交</el-button>
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalScrapFun"
+              >通 过</el-button
+            >
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveScrap">保 存</el-button>
+            <el-button type="primary" @click="submitScrap">提 交</el-button>
+          </template>
         </span>
       </el-dialog>
       <!-- 报废记录信息 -->
@@ -1941,8 +2089,9 @@
               class="span-active"
               @click="getScrapRecord(item)"
               :key="item.recordId"
-              v-text="item.scrapDate"
-            ></span>
+            >
+            
+            {{item.scrapDate}} --- 创建人：{{item.createByName}}</span>
           </template>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -1979,7 +2128,19 @@
               </el-select>
             </el-form-item>
             <el-form-item label="设备编号">
-              <el-select
+              <el-select v-model="form.equipmentCode" filterable @change="setEquName" style="width:100%" placeholder="输入设备编号进行搜索">
+                <el-option
+                  v-for="item in equNameList"
+                  :key="item.equipmentId"
+                  :label="item.equipmentCode"
+                  :value="item"
+                  
+                  >
+                  <span style="float: left">{{ item.equipmentName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">编号:{{ item.equipmentCode }}</span>
+                </el-option>
+              </el-select>
+              <!-- <el-select
                 v-model="form.equipmentCode"
                 placeholder="设备"
                 @change="selectEquName"
@@ -1991,7 +2152,7 @@
                   :value="item"
                 >
                 </el-option>
-              </el-select>
+              </el-select> -->
             </el-form-item>
             <el-form-item label="设备名称">
               <el-input v-model="form.equipmentName" disabled></el-input>
@@ -2013,7 +2174,7 @@
               <el-input v-model.number="form.useTime"></el-input>
             </el-form-item>
             <el-form-item label="巡检周期">
-              <el-select v-model="form.maintenanceCycle" placeholder="巡检周期">
+              <el-select v-model.number="form.maintenanceCycle" placeholder="巡检周期">
                 <el-option
                   v-for="item in inspType"
                   :key="item.value"
@@ -2027,10 +2188,7 @@
               <el-input v-model="form.maintenancePosition"></el-input>
             </el-form-item>
             <el-form-item label="审批人">
-              <el-select
-                v-model="form.approvedUserId"
-                placeholder="审批人"
-              >
+              <el-select v-model="form.approvedUserId" placeholder="审批人">
                 <el-option
                   v-for="item in empOptions"
                   :key="item.userId"
@@ -2071,8 +2229,18 @@
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="maintenanceVisible = false">取 消</el-button>
-          <el-button type="primary" @click="saveMaintenance">保 存</el-button>
-          <el-button type="primary" @click="submitMaintenance">提 交</el-button>
+
+          <template v-if="isApproval">
+            <el-button type="primary" @click="approvalMaintFun"
+              >通 过</el-button
+            >
+          </template>
+          <template v-else>
+            <el-button type="primary" @click="saveMaintenance">保 存</el-button>
+            <el-button type="primary" @click="submitMaintenance"
+              >提 交</el-button
+            >
+          </template>
         </span>
       </el-dialog>
       <!-- 维护保养信息 -->
@@ -2175,8 +2343,9 @@
               class="span-active"
               @click="getMaintRecord(item)"
               :key="item.recordId"
-              v-text="item.maintenanceDate"
-            ></span>
+            >
+            {{item.maintenanceDate}} --- 创建人：{{item.createByName}}
+            </span>
           </template>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -2270,9 +2439,9 @@
                 >
                 </el-option>
               </el-select>
-              <el-button @click="getRunStatus" type="primary"
+              <!-- <el-button @click="getRunStatus" type="primary"
                 >自动校验</el-button
-              >
+              > -->
             </el-form-item>
             <el-form-item label="保养要求">
               <el-input v-model="form.maintainCondition"></el-input>
@@ -2590,6 +2759,55 @@
           <el-button type="primary" @click="saveArea">保 存</el-button>
         </span>
       </el-dialog>
+      <!-- 设备类别 -->
+      <el-dialog
+        title="设备类别"
+        :visible.sync="equTypeVisible"
+        width="30%"
+        :before-close="runClose"
+      >
+        <div>
+          <el-form ref="form" :model="form" label-width="120px">
+            <el-form-item label="类别名称">
+              <el-input v-model="form.typeName"></el-input>
+            </el-form-item>
+            <el-form-item label="类别编号">
+              <el-input v-model="form.typeCode"></el-input>
+            </el-form-item>
+          </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="equTypeVisible = false">取 消</el-button>
+          <el-button type="primary" @click="saveEquTypeFun">保 存</el-button>
+        </span>
+      </el-dialog>
+      
+      <!-- 缺陷报告记录 -->
+      <el-dialog
+        title="缺陷报告记录"
+        :visible.sync="fectVisibleInfo"
+        width="30%"
+        :before-close="runClose"
+      >
+        <div>
+          <template v-for="item in fectListInfo">
+            <span
+              class="span-active"
+              @click="openDefect(item)"
+              :key="item.reportId"
+            > 
+            {{item.createDate}} --- 创建人：{{item.createByName}}
+            </span>
+          </template>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button
+            type="primary"
+            @click="fectVisibleInfo = false"
+            >退 出</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -2633,6 +2851,7 @@ import {
   getByIdRecord,
   selectRecord,
   updataRecord,
+  getInspByEquipmentId,
   /* 缺陷报告 */
   selectDefect,
   addDefect,
@@ -2640,6 +2859,7 @@ import {
   updataDefect,
   getByIdDefect,
   approvalDefct,
+  getDefceListByEquipmentId,
   /* 维修计划 */
   getByIdRepair,
   delRepair,
@@ -2652,6 +2872,7 @@ import {
   selectRepairRecord,
   updataRepairRecord,
   approvalRepair,
+  getRepairListByEquipmentId,
   /* 报废计划 */
   addScrap,
   updataScrap,
@@ -2676,6 +2897,7 @@ import {
   selectMaintenanceRecord,
   updataMaintenanceRecord,
   approvalMainten,
+  getMaintListByEquipmentId,
   /* 台账信息 */
   getStandingbookDetail,
   selectStandingbook,
@@ -2691,6 +2913,10 @@ import {
   delArea,
   addArea,
   updataArea,
+  /* 设备类别 */
+  delequType,
+  addequType,
+  updataequType
 } from "@/api/mocha";
 
 import { delFiles } from "@/api/file";
@@ -2708,6 +2934,11 @@ export default {
       equList: [],
       //设备运行数据
       tableData: [],
+      equPorps:{
+        value:'typeCode',
+        label:'typeName',
+        children:'children'
+      },
       total: 0,
       runVisible: false,
       libVisible: false,
@@ -2727,10 +2958,10 @@ export default {
         { value: "2", label: "根" },
       ],
       inspType: [
-        { value: "0", label: "每日" },
-        { value: "1", label: "每周" },
-        { value: "2", label: "每月" },
-        { value: "3", label: "每年" },
+        { value: 0, label: "每日" },
+        { value: 1, label: "每周" },
+        { value: 2, label: "每月" },
+        { value: 3, label: "每年" },
       ],
       headersData: {
         Authorization: "Bearer " + getToken(),
@@ -2740,6 +2971,7 @@ export default {
       accData: [],
       accVisible: false,
       accTotal: 0,
+      equipmentCodeCom: "",
 
       /* 设备运行参数 */
       runData: [],
@@ -2758,6 +2990,8 @@ export default {
       defectData: [],
       defectVisible: false,
       defectTotal: 0,
+      fectListInfo:[],
+      fectVisibleInfo:false,
       /* 维修计划 */
       repairlData: [],
       repairlVisible: false,
@@ -2819,21 +3053,22 @@ export default {
         { value: "1", label: "运行中" },
         { value: "2", label: "中止" },
       ],
+      //设备类别
+      equTypeVisible:false,
       equipmentType: [],
+      //判断用户是否进行审批操作
+      isApproval: false,
+      //设备编号列表
+      equNameList:[],
     };
   },
   created() {
     vm = this;
     vm.getData();
-    // vm.gettableData();
     vm.getEquLib();
     vm.getAccData();
-    vm.getDefectList();
-    vm.getRepairList();
-    vm.getScrapList();
-    vm.getMaintenanceList();
-    vm.getStandList();
     vm.getEnergyList();
+    vm.getEquListFun();
   },
   computed: {
     ...mapGetters(["userId"]),
@@ -2913,6 +3148,9 @@ export default {
       let data;
       if (vm.option) {
         //新增
+        // let equipmentCode = vm.equipmentCodeCom;
+        // equipmentCode = vm.form.energyStationId + "-" + equipmentCode;
+        // vm.form.equipmentCode = equipmentCode;
         data = addAcc(vm.form);
       } else {
         //修改
@@ -2970,8 +3208,9 @@ export default {
     addRun() {
       vm.option = true;
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
+      vm.isApproval = false;
       vm.runVisible = true;
     },
     //获取运行设备列表
@@ -3003,19 +3242,26 @@ export default {
     openModeRun(row) {
       vm.option = false;
       vm.form = row;
+      vm.isApproval = false;
+      vm.runVisible = true;
+    },
+    approvalModeRun(row) {
+      vm.isApproval = true;
+      vm.form = row;
       vm.runVisible = true;
     },
     //审批
-    approvalEquFun(row,approvalStatus) {
-      const { runingId } = row;
+    approvalEquFun() {
+      const { runingId } = vm.form;
       const data = {
-        approvalStatus,
-        runingId
-      }
-      approvalEqu(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.gettableData();
-      })
+        approvalStatus: 3,
+        runingId,
+      };
+      approvalEqu(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.runVisible = false;
+        vm.gettableData();
+      });
     },
     //分页
     currentRunChange(e) {
@@ -3041,8 +3287,9 @@ export default {
     addInsp() {
       vm.option = true;
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
+      vm.isApproval = false;
       vm.inspVisible = true;
     },
     //提交巡检计划
@@ -3075,10 +3322,23 @@ export default {
       vm.form.status = 0;
       vm.inspReqFun();
     },
+    //打开审批
+    approvalModeInsp(row) {
+      const { planId } = row;
+      vm.option = false;
+      vm.isApproval = true;
+      getInspectplan(planId).then((res) => {
+        if (res.code === 0) {
+          vm.form = res.data;
+          vm.inspVisible = true;
+        }
+      });
+    },
     //查看一个巡检计划
     openModeInsp(row) {
       const { planId } = row;
       vm.option = false;
+      vm.isApproval = false;
       getInspectplan(planId).then((res) => {
         if (res.code === 0) {
           vm.form = res.data;
@@ -3087,16 +3347,17 @@ export default {
       });
     },
     //审批
-    approvalInspFun(row,approvalStatus){
-      const { planId } = row;
+    approvalInspFun() {
+      const { planId } = vm.form;
       const data = {
-        approvalStatus,
-        planId
-      }
-      approvalInsp(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.getInspectplanList();
-      })
+        approvalStatus: 3,
+        planId,
+      };
+      approvalInsp(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.getInspectplanList();
+        vm.inspVisible = false;
+      });
     },
     //删除巡检计划
     delInspFun(row) {
@@ -3119,6 +3380,7 @@ export default {
       vm.option = true;
       vm.form = {
         planId: vm.comPlanId,
+        createBy: vm.userId,
       };
       vm.option = true;
       vm.repairVisible = true;
@@ -3136,6 +3398,7 @@ export default {
       data.then((res) => {
         if (res.code === 0) {
           vm.$message.success(res.message);
+          vm.getInspectplanList();
           vm.repairVisible = false;
         } else {
           vm.$message.error(res.message);
@@ -3158,10 +3421,21 @@ export default {
     viewInspectCycle(row) {
       const { planId } = row;
       selectRecord({ planId }).then((res) => {
-        console.log(res);
         if (res.code === 0) {
           vm.repairListInfo = res.data;
           vm.repairVisibleInfo = true;
+        }
+      });
+    },
+    //根据设备ID查看巡检记录
+    viewInspectCycleById(row) {
+      const { equipmentId } = row;
+      getInspByEquipmentId({ equipmentId }).then((res) => {
+        if (res.code === 0 && res.data.length>0) {
+          vm.repairListInfo = res.data;
+          vm.repairVisibleInfo = true;
+        }else{
+          vm.$message.error('暂无记录')
         }
       });
     },
@@ -3188,8 +3462,9 @@ export default {
     addDefectFun() {
       vm.option = true;
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
+      vm.isApproval = false;
       vm.defectVisible = true;
     },
     //提交缺陷
@@ -3221,10 +3496,10 @@ export default {
       vm.form.status = 0;
       vm.defectReqFun();
     },
-    //获取一个缺陷
-    openDefect(row) {
+    openDefectModel(row) {
       const { reportId } = row;
       vm.option = false;
+      vm.isApproval = true;
       getByIdDefect(reportId).then((res) => {
         if (res.code === 0) {
           vm.form = res.data;
@@ -3232,17 +3507,42 @@ export default {
         }
       });
     },
-    //审批
-    approvalDefectFun(row,approvalStatus){
+    //获取一个缺陷
+    openDefect(row) {
       const { reportId } = row;
+      vm.option = false;
+      vm.isApproval = false;
+      getByIdDefect(reportId).then((res) => {
+        if (res.code === 0) {
+          vm.form = res.data;
+          vm.defectVisible = true;
+        }
+      });
+    },
+    //通过设备id查看缺陷报告记录
+    viewfectById(row) {
+      const { equipmentId } = row;
+      getDefceListByEquipmentId({ equipmentId }).then((res) => {
+        if (res.code === 0 && res.data.length>0) {
+          vm.fectListInfo = res.data;
+          vm.fectVisibleInfo = true;
+        }else{
+          vm.$message.error('暂无记录')
+        }
+      });
+    },
+    //审批
+    approvalDefectFun() {
+      const { reportId } = vm.form;
       const data = {
-        approvalStatus,
-        reportId
-      }
-      approvalDefct(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.getDefectList();
-      })
+        approvalStatus: 3,
+        reportId,
+      };
+      approvalDefct(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.getDefectList();
+        vm.defectVisible = false;
+      });
     },
     delDefectFun(row) {
       const { reportId } = row;
@@ -3274,8 +3574,9 @@ export default {
     addRepairlFun() {
       vm.option = true;
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
+      vm.isApproval = false;
       vm.repairlVisible = true;
     },
     //提交维修计划
@@ -3309,9 +3610,21 @@ export default {
       vm.repairlFun();
     },
     //查看一个维修计划
+    openRepairFunModel(row) {
+      const { planId } = row;
+      vm.option = false;
+      vm.isApproval = true;
+      getByIdRepair(planId).then((res) => {
+        if (res.code === 0) {
+          vm.form = res.data;
+          vm.repairlVisible = true;
+        }
+      });
+    },
     openRepairFun(row) {
       const { planId } = row;
       vm.option = false;
+      vm.isApproval = false;
       getByIdRepair(planId).then((res) => {
         if (res.code === 0) {
           vm.form = res.data;
@@ -3320,16 +3633,17 @@ export default {
       });
     },
     //审批
-    approvalRepairFun(row,approvalStatus){
-       const { planId } = row;
+    approvalRepairFun() {
+      const { planId } = vm.form;
       const data = {
-        approvalStatus,
-        planId
-      }
-      approvalRepair(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.getRepairList();
-      })
+        approvalStatus: 3,
+        planId,
+      };
+      approvalRepair(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.getRepairList();
+        vm.repairlVisible = false;
+      });
     },
     delRepairFun(row) {
       const { planId } = row;
@@ -3352,6 +3666,17 @@ export default {
         }
       });
     },
+    viewRecordById(row) {
+      const { equipmentId } = row;
+      getRepairListByEquipmentId({ equipmentId }).then((res) => {
+        if (res.code === 0 && res.data.length>0) {
+          vm.repairrecordListInfo = res.data;
+          vm.repairRecordVisibleInfo = true;
+        }else{
+          vm.$message.error('暂无记录')
+        }
+      });
+    },
 
     //新增维修记录
     addRepairRecordFun() {
@@ -3362,6 +3687,7 @@ export default {
       vm.option = true;
       vm.form = {
         planId: vm.comPlanId,
+        createBy: vm.userId,
       };
       vm.repairRepVisible = true;
     },
@@ -3389,6 +3715,7 @@ export default {
       }
       data.then((res) => {
         if (res.code === 0) {
+          vm.getRepairList();
           vm.$message.success(res.message);
           vm.repairRepVisible = false;
         } else {
@@ -3417,8 +3744,9 @@ export default {
     addScrapFun() {
       vm.option = true;
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
+      vm.isApproval = false;
       vm.scrapVisible = true;
     },
     //获取报废计划
@@ -3462,9 +3790,22 @@ export default {
       vm.form.status = 0;
       vm.scrapReqFun();
     },
+    openScrapFunModel(row) {
+      vm.option = false;
+      vm.isApproval = true;
+      const { planId } = row;
+      getByIdScrap(planId).then((res) => {
+        if (res.code === 0) {
+          // vm.repairrecordListInfo = res.data;
+          vm.form = res.data;
+          vm.scrapVisible = true;
+        }
+      });
+    },
     //查看一个报废计划
     openScrapFun(row) {
       vm.option = false;
+      vm.isApproval = false;
       const { planId } = row;
       getByIdScrap(planId).then((res) => {
         if (res.code === 0) {
@@ -3475,16 +3816,17 @@ export default {
       });
     },
     //审批
-    approvalScrapFun(row,approvalStatus){
-      const { planId } = row;
+    approvalScrapFun() {
+      const { planId } = vm.form;
       const data = {
-        approvalStatus,
-        planId
-      }
-      approvalScrap(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.getScrapList();
-      })
+        approvalStatus: 3,
+        planId,
+      };
+      approvalScrap(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.getScrapList();
+        vm.scrapVisible = false;
+      });
     },
     //删除一个报废计划
     delScrapFun(row) {
@@ -3508,6 +3850,7 @@ export default {
       vm.option = true;
       vm.form = {
         planId: vm.comPlanId,
+        createBy: vm.userId,
       };
       vm.scrapRecordVisible = true;
     },
@@ -3576,9 +3919,10 @@ export default {
     //新增保养计划
     addMaintenanceFun() {
       vm.form = {
-        createBy:vm.userId
+        createBy: vm.userId,
       };
       vm.option = true;
+      vm.isApproval = false;
       vm.maintenanceVisible = true;
     },
     //提交保养计划
@@ -3610,9 +3954,22 @@ export default {
       vm.form.status = 0;
       vm.maintenanceReqFun();
     },
+    openMaintFunModel(row) {
+      vm.option = false;
+      vm.isApproval = true;
+      const { planId } = row;
+      getByIdMaintenance(planId).then((res) => {
+        if (res.code === 0) {
+          // vm.repairrecordListInfo = res.data;
+          vm.form = res.data;
+          vm.maintenanceVisible = true;
+        }
+      });
+    },
     //查看报废计划详细
     openMaintFun(row) {
       vm.option = false;
+      vm.isApproval = false;
       const { planId } = row;
       getByIdMaintenance(planId).then((res) => {
         if (res.code === 0) {
@@ -3623,16 +3980,17 @@ export default {
       });
     },
     //审批
-    approvalMaintFun(row,approvalStatus){
-      const { planId } = row;
+    approvalMaintFun() {
+      const { planId } = vm.form;
       const data = {
-        approvalStatus,
-        planId
-      }
-      approvalMainten(data).then(res=>{
-          vm.$message.info(res.message);
-          vm.getMaintenanceList();
-      })
+        approvalStatus: 3,
+        planId,
+      };
+      approvalMainten(data).then((res) => {
+        vm.$message.info(res.message);
+        vm.getMaintenanceList();
+        vm.maintenanceVisible = false;
+      });
     },
     //删除报废计划
     delMaintFun(row) {
@@ -3654,6 +4012,17 @@ export default {
         if (res.code === 0) {
           vm.maintenanceRecordInfoList = res.data.records;
           vm.maintenanceRecordInfoVisible = true;
+        }
+      });
+    },
+    viewMaintenanceById(row) {
+      const { equipmentId } = row;
+      getMaintListByEquipmentId({ equipmentId }).then((res) => {
+        if (res.code === 0 && res.data.length>0) {
+          vm.maintenanceRecordInfoList = res.data;
+          vm.maintenanceRecordInfoVisible = true;
+        }else{
+          vm.$message.error('暂无记录')
         }
       });
     },
@@ -3679,6 +4048,7 @@ export default {
       vm.option = true;
       vm.form = {
         planId: vm.comPlanId,
+        createBy: vm.userId,
       };
       vm.maintenanceRecordVisible = true;
     },
@@ -3959,6 +4329,66 @@ export default {
       });
     },
 
+
+
+    /* 设备类别管理 */
+    //新增根级类别
+    addequTypeFun(){
+      vm.option = true;
+      vm.form = {};
+      vm.equTypeVisible = true;
+    },
+    //新增下级
+    addequTypeChildren(row){
+      vm.option = true;
+      const { typeId } = row;
+      vm.form = {
+        fatherId:typeId
+      }
+      vm.equTypeVisible = true;
+    },
+    //编辑类别
+    editEquTypeFun(row){
+      vm.form = row;
+      vm.option = false;
+      vm.equTypeVisible = true;
+    },
+    //删除类别
+    delEquTypeFun(row){
+      const { typeId } =row;
+      delequType({typeId}).then(res=>{
+        if(res.code === 0) {
+          vm.$message.success(res.message);
+          vm.getData();
+        }else{
+          vm.$message.error(res.message);
+        }
+      })
+    },
+    //保存类别
+    saveEquTypeFun(){
+      let data;
+      if (vm.option) {
+        //新增
+        data = addequType(vm.form);
+      } else {
+        //修改
+        data = updataequType(vm.form);
+      }
+      data.then((res) => {
+        if (res.code === 0) {
+          vm.$message.success(res.message);
+          vm.getData();
+          vm.equTypeVisible = false;
+        } else {
+          vm.$message.error(res.message);
+        }
+      });
+    },
+
+
+
+
     setData() {
       vm.$set(vm.form);
     },
@@ -4031,13 +4461,26 @@ export default {
         }
       });
     },
-
+    getEquListFun(){
+      getEquName({}).then((res) => {
+        if (res.code === 0) {
+         const { data } = res;
+          vm.equNameList = data;
+        }
+      });
+    },
+    //设置设备名称 
+    setEquName(val){
+      const { equipmentName,equipmentCode,equipmentId } = val;
+      vm.form.equipmentName=equipmentName;
+      vm.form.equipmentCode=equipmentCode;
+      vm.form.equipmentId=equipmentId;
+    },
     querySearchAsync(queryString, cb) {
       const query = {
         equipmentName: queryString,
       };
       getEquName(query).then((res) => {
-        console.log(res);
         const { data } = res;
         if (data.length > 0) {
           data.forEach((v) => {
@@ -4065,17 +4508,36 @@ export default {
       if (newId !== vm.activeInfo) {
         vm.activeInfo = newId;
         switch (newId) {
+          
           case "third":
             vm.gettableData();
             break;
           case "first":
             vm.getAccData();
             break;
+          case "second":
+            vm.getStandList();
+            break;
           case "fourth":
             vm.getInspectplanList();
             break;
           case "ten":
             vm.getEnergyList();
+            break;
+          case "five":
+            vm.getDefectList();
+            break;
+          case "six":
+            vm.getMaintenanceList();
+            break;
+          case "seven":
+            vm.getRepairList();
+            break;
+          case "eight":
+            vm.getScrapList();
+            break;
+          case "night":
+            vm.getScrapList();
             break;
 
           default:
