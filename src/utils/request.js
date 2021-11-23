@@ -2,23 +2,24 @@ import axios from 'axios'
 import { Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
-import router from '@/router'  //引入router
-let loadingRequestCount = 0;
-let loadingInstance;
+import router from '@/router' //引入router
+let loadingRequestCount = 0
+let loadingInstance
 const showLoading = () => {
 	if (loadingRequestCount === 0) {
 		loadingInstance = Loading.service({
+			target: document.querySelector('.app-main'),
 			lock: true,
 			text: '加载中……',
-			background: 'rgba(0, 0, 0, 0.5)'
-		});
+			background: 'rgba(0, 0, 0, 0.5)',
+		})
 	}
 	loadingRequestCount++
 }
 const hideLoading = () => {
 	loadingRequestCount--
 	if (loadingRequestCount === 0) {
-		loadingInstance.close();
+		loadingInstance.close()
 	}
 	if (loadingRequestCount <= 0) return
 }
@@ -27,49 +28,49 @@ const service = axios.create({
 	timeout: 20000, // 超时时间
 	baseURL: 'http://47.92.201.212:6004/api/', // 公共地址
 	// baseURL: 'http://mwaj5n.natappfree.cc/api/', // 公共地址
-	
+
 	// /swagger-ui.html
 })
 
 // // request interceptor
 service.interceptors.request.use(
-  config => {
-    showLoading(config)
-    if (store.getters.token) {
-		if(getToken() !== "undefined"){
-			config.headers['Authorization'] = "Bearer "+getToken()
+	(config) => {
+		showLoading(config)
+		if (store.getters.token) {
+			if (getToken() !== 'undefined') {
+				config.headers['Authorization'] = 'Bearer ' + getToken()
+			}
+		} else {
+			config.headers['Authorization'] = 'Basic Y3VybF9jbGllbnQ6c2VjcmV0'
 		}
-    }else{
-		config.headers['Authorization'] = "Basic Y3VybF9jbGllbnQ6c2VjcmV0"
+		return config
+	},
+	(error) => {
+		setTimeout(() => {
+			hideLoading()
+		}, 200)
+		return Promise.reject(error)
 	}
-    return config
-  },
-  error => {
-	setTimeout(() => {
-		hideLoading()
-	}, 200);
-    return Promise.reject(error)
-  }
 )
 
 // 请求拦截
 service.interceptors.response.use(
-	response => {
-		const res = response.data;
+	(response) => {
+		const res = response.data
 		hideLoading()
 		if (res.code === -1) {
-			localStorage.clear();
+			localStorage.clear()
 			store.dispatch('user/resetToken').then(() => {
 				router.replace({
 					path: '/login',
 					query: {
-						redirect: '/'
-					}
+						redirect: '/',
+					},
 				})
 				// router.push("/login");
 			})
-		}else{
-			return res;
+		} else {
+			return res
 		}
 		// 	store.dispatch("user/setUserStaus", true);
 		// 	store.dispatch("user/setErrMsg", res.message);
@@ -86,46 +87,45 @@ service.interceptors.response.use(
 		// 	return response;
 		// }
 		// console.log(res);
-		
+
 		// if(res.code === 0){
 		// 	return res;
 		// }else{
 		// 	Message.error(res.message);
 		// }
-		
-
 	},
-	error => {
-		hideLoading();
-		Message.error('网络连接失败');
-		return Promise.reject(error);
+	(error) => {
+		hideLoading()
+		Message.error('网络连接失败')
+		return Promise.reject(error)
 	}
 )
-
 
 export function get(url, params) {
 	// JSON.parse(JSON.stringify(params)))
 	// console.log(JSON.parse(JSON.stringify(params)))
 	return new Promise((resolve, reject) => {
-		service.get(url, { params }).then(res => {
-			resolve(res);
-		}).catch(err => {
-			reject(err.data)
-		})
-	});
+		service
+			.get(url, { params })
+			.then((res) => {
+				resolve(res)
+			})
+			.catch((err) => {
+				reject(err.data)
+			})
+	})
 }
 export function post(url, params) {
-
 	return new Promise((resolve, reject) => {
-
-		service.post(url, params)
-			.then(res => {
-				resolve(res);
+		service
+			.post(url, params)
+			.then((res) => {
+				resolve(res)
 			})
-			.catch(err => {
-				reject(err.msg);
+			.catch((err) => {
+				reject(err.msg)
 			})
-	});
+	})
 }
 /**
  * put方法，对应put请求
@@ -134,16 +134,16 @@ export function post(url, params) {
  */
 export function put(url, params) {
 	return new Promise((resolve, reject) => {
-		service.put(url, params)
-			.then(res => {
-				resolve(res);
+		service
+			.put(url, params)
+			.then((res) => {
+				resolve(res)
 			})
-			.catch(err => {
-				reject(err.msg);
+			.catch((err) => {
+				reject(err.msg)
 			})
-	});
+	})
 }
-
 
 /**
  * delete
@@ -152,33 +152,34 @@ export function put(url, params) {
  */
 export function deletefn(url, params) {
 	return new Promise((resolve, reject) => {
-		service.delete(url, { params })
-			.then(res => {
-				resolve(res);
+		service
+			.delete(url, { params })
+			.then((res) => {
+				resolve(res)
 			})
-			.catch(err => {
-				reject(err.msg);
+			.catch((err) => {
+				reject(err.msg)
 			})
-	});
-};
+	})
+}
 /**
  * 下载文件流
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function down(url,params) {
+export function down(url, params) {
 	return new Promise((resolve, reject) => {
 		service({
 			method: 'post',
 			url,
-			data:params,
-			responseType: 'arraybuffer'
+			data: params,
+			responseType: 'arraybuffer',
 		})
-			.then(res => {
-				resolve(res);
+			.then((res) => {
+				resolve(res)
 			})
-			.catch(err => {
-				reject(err.msg);
+			.catch((err) => {
+				reject(err.msg)
 			})
-	});
+	})
 }
