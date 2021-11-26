@@ -241,7 +241,7 @@
         </div>
       </el-tab-pane>
       <!-- <el-tab-pane label="供能服务管理" name="third"></el-tab-pane> -->
-      <el-tab-pane label="诉求管理" name="fourth">
+      <el-tab-pane label="用户反馈" name="fourth">
         <div class="main">
           <div class="title-box" style="width: auto">
             <div class="title-list">

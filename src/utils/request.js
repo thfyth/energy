@@ -27,7 +27,7 @@ const hideLoading = () => {
 const service = axios.create({
 	timeout: 20000, // 超时时间
 	baseURL: 'http://47.92.201.212:6004/api/', // 公共地址
-	// baseURL: 'http://mwaj5n.natappfree.cc/api/', // 公共地址
+	// baseURL: 'http://mz4evm.natappfree.cc/api/', // 公共地址
 
 	// /swagger-ui.html
 })

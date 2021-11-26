@@ -3064,10 +3064,10 @@ export default {
 				{ value: '2', label: '根' },
 			],
 			inspType: [
-				{ value: 0, label: '每日' },
-				{ value: 1, label: '每周' },
-				{ value: 2, label: '每月' },
-				{ value: 3, label: '每年' },
+				{ value: 1, label: '每日' },
+				{ value: 2, label: '每周' },
+				{ value: 3, label: '每月' },
+				{ value: 4, label: '每年' },
 			],
 			headersData: {
 				Authorization: 'Bearer ' + getToken(),
